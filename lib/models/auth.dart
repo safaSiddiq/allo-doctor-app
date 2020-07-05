@@ -1,0 +1,6 @@
+
+
+enum AuthMode {
+  SingUp,
+  Login
+}
