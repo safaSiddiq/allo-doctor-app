@@ -1,6 +1,4 @@
 
-import 'package:allo_doctor/pages/registrationASdoctor.dart';
-import 'package:allo_doctor/pages/registrationASpatient.dart';
 import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
 import 'package:flutter/material.dart';
 
@@ -39,16 +37,14 @@ decoration: BoxDecoration(
               RawMaterialButton(
                   child: _userKindButton('مريض', 'assets/Patient.png'),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RegistrationASpatient()));
+                   Navigator.pushNamed(context, "/RegistrationASpatient");
                   }),
               SizedBox(height: 45.0),
               RawMaterialButton(
                   child: _userKindButton('طبيب', 'assets/Doctor.png'),
                   onPressed: () {
                     onLoading(context);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RegistrationASdoctor()));
+                   Navigator.pushNamed(context, "/RegistrationASdoctor");
                   }),
             ],
      ) )),

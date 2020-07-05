@@ -1,4 +1,3 @@
-import 'package:allo_doctor/pages/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
@@ -41,8 +40,7 @@ gradient: mainColor
         activeSize: Size.square(17)
       ),
       pages: [
-        PageViewModel(
-          
+        PageViewModel(  
           title: "allo doctor",
          // body:"data " ,
           bodyWidget: Center(
@@ -85,8 +83,7 @@ gradient: mainColor
       // onSkip: (){
       // },
        onDone: (){
-         Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => LoginScreen()),
+       Navigator.pushReplacementNamed(context, "/LoginScreen",
     );
        },
        done:  Text('التالي', style: TextStyle(color: Colors.white,fontSize: 17,fontWeight: FontWeight.w600)),

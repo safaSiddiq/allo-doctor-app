@@ -2,12 +2,12 @@ import 'package:allo_doctor/patient/patientScreens/medicalFile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 
-class PersonalInfo extends StatefulWidget {
+class DrPersonalInfo extends StatefulWidget {
   @override
-  _PersonalInfoState createState() => _PersonalInfoState();
+  _DrPersonalInfoState createState() => _DrPersonalInfoState();
 }
 
-class _PersonalInfoState extends State<PersonalInfo> {
+class _DrPersonalInfoState extends State<DrPersonalInfo> {
   bool isOnline = true;
   final myController = TextEditingController();
   String inputData = "";

@@ -1,7 +1,3 @@
-import 'package:allo_doctor/Doctor/DoctorScreens/messageScreen.dart';
-import 'package:allo_doctor/Doctor/DoctorScreens/patientsScreen.dart';
-import 'package:allo_doctor/Doctor/DoctorScreens/personalInfo.dart';
-import 'package:allo_doctor/Doctor/DoctorScreens/queries.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/queryView.dart';
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:flutter/material.dart';
@@ -241,22 +237,19 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                           //  Divider(thickness: 1,color:  Colors.teal,)),
                           RawMaterialButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => Queries()));
+                             Navigator.pushNamed(context, "/Queries");
                             },
                             child: iconDrawer("الاستعلامات", Icons.inbox),
                           ),
                           RawMaterialButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => DrMessageScreen()));
+                             Navigator.pushNamed(context, "/DrMessageScreen");
                             },
                             child: iconDrawer("الرسائل", Icons.mail),
                           ),
                           RawMaterialButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PatientsScreen()));
+                            Navigator.pushNamed(context, "/PatientsScreen");
                             },
                             child: iconDrawer("المرضى", Icons.people),
                           ),
@@ -271,8 +264,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                           ),
                           RawMaterialButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PersonalInfo()));
+                              Navigator.pushNamed(context, "/DrPersonalInfo");
                             },
                             child: iconDrawer("بيانات شخصية", Icons.settings),
                           ),
@@ -315,8 +307,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                               decoration: BoxDecoration(),
                               child: RaisedButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => Queries()));
+                                 Navigator.pushNamed(context, "/Queries");
                                 },
                                 color: Colors.deepOrangeAccent,
                                 shape: RoundedRectangleBorder(
@@ -353,8 +344,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                             decoration: BoxDecoration(),
                             child: RaisedButton(
                               onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => Queries()));
+                                Navigator.pushNamed(context, "/Queries");
                               },
                               color: Colors.deepOrangeAccent,
                               shape: RoundedRectangleBorder(

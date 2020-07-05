@@ -1,12 +1,15 @@
 import 'package:allo_doctor/models/patient.dart';
-import 'package:allo_doctor/pages/loginScreen.dart';
 import 'package:allo_doctor/pages/ui_widgets/registrationRow.dart';
-import 'package:allo_doctor/patient/patientScreens/homeScreen.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 
 //import 'package:flutter/cupertino.dart';
 class RegistrationASpatient extends StatefulWidget {
+
+  final MainModel model;
+  RegistrationASpatient(this.model);
+
   @override
   State<StatefulWidget> createState() {
     return _RegistrationASpatient();
@@ -14,9 +17,11 @@ class RegistrationASpatient extends StatefulWidget {
 }
 
 class _RegistrationASpatient extends State<RegistrationASpatient> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Patient _patient;
 
+ //@override
+ final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Patient _patient;
+ 
   Patient get patient{
     if (_patient == null ){
       _patient = Patient();
@@ -24,6 +29,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
   return _patient;
   }
   String _selectedText = 'الجنس';
+  
 
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
@@ -39,6 +45,34 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+  _onPressed(){
+    // setState(() {
+    //   if(_emailController.text.trim().toLowerCase().isNotEmpty &&
+    //       _passwordController.text.trim().isNotEmpty ){
+        widget.model.registrationPatient(
+        _firstNameController.text.trim(),
+        _lastNameController.text.trim(),
+      _emailController.text.trim().toLowerCase(),
+         patient.gender,
+     patient.birthdate,
+           _userNameController.text,
+           _passwordController.text.trim()).whenComplete((){
+             print(patient.firstName);
+          // if(registrationPatient.status){
+          //   _showDialog();
+          //   msgStatus = 'Check email or password';
+          // }else{
+          //  Navigator.pushReplacementNamed(context, '/dashboard');
+
+
+         // }
+      //  });
+     // }
+    });
+  }
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -126,17 +160,22 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
                     SizedBox(height: 10.0),
                     passwordField(),
                     SizedBox(height: 20.0),
-                    registrationButton(),
+                    registrationButton((){
+                      _onPressed();
+                      // widget.model.registrationPatient(patient.firstName, patient.lastName,
+                      //  patient.gender, patient.birthdate,
+                      //   patient.email, patient.userName, patient.password);
+                    }),
                     SizedBox(height: 10.0),
                     registrationRow(() {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => LoginScreen()));
+                      Navigator.pushReplacementNamed(context, "/LoginScreen");
                     })
                   ]),
                 ))));
   }
 
-  Widget firstName() {
+
+ Widget firstName() {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: TextFormField(
@@ -151,9 +190,20 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
           cursorColor: Colors.white,
           onSaved: (String value) {
             patient.firstName = value;
+            
           },
         ));
   }
+
+
+
+
+
+
+
+
+
+ 
 
   Widget lastName() {
     return Directionality(
@@ -206,12 +256,15 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         ),
         keyboardType: TextInputType.emailAddress,
         cursorColor: Colors.white,
-        
-        //onSaved: (String value){userName=value},
+        onSaved: (String value){
+          setState(() {
+              patient.userName=value;
+          });
+        },
       ));
-}
+ }
 
-Widget passwordField() {
+ Widget passwordField() {
   return Directionality(
       textDirection: TextDirection.rtl,
       child: TextFormField(
@@ -223,12 +276,16 @@ Widget passwordField() {
                   borderSide: BorderSide(color: Colors.white,width: 2.0))),
           keyboardType: TextInputType.visiblePassword,
           textAlign: TextAlign.right,
-          style: TextStyle(color: Colors.white)
-         // onSaved: (String value){},
+          style: TextStyle(color: Colors.white),
+          onSaved: (String value){
+            setState(() {
+              patient.password=value;
+            });
+          },
           ));
-}
+ }
 
-Widget registrationButton() {
+ Widget registrationButton(Function function) {
     return Container(
       height: 43.0,
       child:
@@ -243,10 +300,10 @@ Widget registrationButton() {
         padding: EdgeInsets.symmetric(horizontal: 50.0),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        onPressed: (){
-
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => HomeScreenPatient()));
-        }) );
+        onPressed: function
+        // (){  
+      // Navigator.pushReplacementNamed(context, "/HomeScreenPatient");
+       // }) 
+    ));
   }
 }

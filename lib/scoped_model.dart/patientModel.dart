@@ -26,7 +26,7 @@ class PatientModel extends Model {
   }
 
   Future login(String email, String password) async {
-    final http.Response response = await http.post("url", 
+    final http.Response response = await http.post("http://192.168.1.36:3000/patients", 
     headers: {
       "Accept": "Application/json",
       'Content-Type': 'Application/json'
@@ -49,7 +49,7 @@ class PatientModel extends Model {
       String firstName,
       String lastName,
       String gender,
-      String birthDate,
+      String birthdate,
       String email,
       String userName,
       String password) async {
@@ -57,19 +57,24 @@ class PatientModel extends Model {
       "firstName": firstName,
       "lastName": lastName,
       "gender": gender,
-      "birthDate": birthDate,
+      "birthdate": birthdate,
       "email": email,
       "userName": userName,
       "password": password
     };
 
-    http.Response response = await http.post("url",
+    http.Response response = await http.post("http://192.168.1.36:3000/patients",
         headers: {
           "Accept": "Application/json",
-          'Content-Type': 'Application/json'
+         // 'Content-Type': 'Application/json'
         },
         body: patient);
+        print("response stuse :${response.statusCode}");
+      print("response body :${response.body}");
+
     var data = json.decode(response.body);
+    //  print("response stuse :${response.statusCode}");
+    //   print("response body :${response.body}");
 
     _save(data["token"]);
   }

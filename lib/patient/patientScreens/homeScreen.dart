@@ -1,13 +1,5 @@
 //import 'package:allo_doctor/pages/registrationScreen.dart';
 import 'package:allo_doctor/pages/registrationScreen.dart';
-import 'package:allo_doctor/patient/patientScreens/callCenterScreen.dart';
-import 'package:allo_doctor/patient/patientScreens/diagnosisesScreesn.dart';
-import 'package:allo_doctor/patient/patientScreens/doctorsSearch.dart';
-import 'package:allo_doctor/patient/patientScreens/fillQuery.dart';
-import 'package:allo_doctor/patient/patientScreens/massagesScreen.dart';
-import 'package:allo_doctor/patient/patientScreens/medicalFile.dart';
-import 'package:allo_doctor/patient/patientScreens/personalInfoScreen.dart';
-import 'package:allo_doctor/patient/patientScreens/queriesReplaies.dart';
 import 'package:allo_doctor/patient/ui_widgets/doctorCard.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +12,7 @@ class HomeScreenPatient extends StatefulWidget {
 }
 
 class _HomeScreenPatient extends State<HomeScreenPatient> {
+  final String id = "HomeScreenPatient";
   MainModel model;
   bool isOnline = true;
 
@@ -143,45 +136,38 @@ class _HomeScreenPatient extends State<HomeScreenPatient> {
               RawMaterialButton(
                   child: iconDrawer(' استعلام عام', Icons.create_new_folder),
                   onPressed: () {
-                    
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => FillQueryScreen(model)));
+                   Navigator.pushNamed(context, "/FillQueryScreen"); 
+                   
                   }),
               RawMaterialButton(
                   child: iconDrawer('بحث عن طبيب', Icons.search),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => DoctorsSearch(model)));
+                  Navigator.pushNamed(context, "/DoctorsSearch");
                   }),
               RawMaterialButton(
                   child: iconDrawer('ردود الاستعلامات', Icons.inbox),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => QueriesReplaies()));
+                 Navigator.pushNamed(context, "/QueriesReplaies");
                   }),
               RawMaterialButton(
                   child: iconDrawer('الرسائل', Icons.mail),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MassagesScreen()));
+                    Navigator.pushNamed(context, "/MassagesScreen");
                   }),
               RawMaterialButton(
                   child: iconDrawer('التشخيصات', Icons.playlist_add_check),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DiagnosisesScreen()));
+                    Navigator.pushNamed(context, "/DiagnosisesScreen");
                   }),
               RawMaterialButton(
                   child: iconDrawer('ملف طبي', Icons.folder),
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => MedicalFile()));
+                  Navigator.pushNamed(context, "/MedicalFile");
                   }),
               RawMaterialButton(
                   child: iconDrawer('مركز الاتصالات', Icons.contact_phone),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => CallCenterScreen()));
+                Navigator.pushNamed(context, "/CallCenterScreen");
                   }),
               RawMaterialButton(
                   child: iconDrawer('تواصل معنا', Icons.phone),
@@ -189,8 +175,7 @@ class _HomeScreenPatient extends State<HomeScreenPatient> {
               RawMaterialButton(
                   child: iconDrawer('بيانات شخصية', Icons.settings),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PesronalinfoScreen()));
+                   Navigator.pushNamed(context, "/PesronalinfoScreen");
                   }),
               RawMaterialButton(
                   child: iconDrawer('تسجيل الخروج', Icons.power_settings_new),
@@ -230,8 +215,7 @@ class _HomeScreenPatient extends State<HomeScreenPatient> {
                       decoration: BoxDecoration(),
                       child: RaisedButton(
                         onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => QueriesReplaies()));
+                          Navigator.pushNamed(context, "/QueriesReplaies");
                         },
                         color: Colors.deepOrangeAccent,
                         shape: RoundedRectangleBorder(
