@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
-void onLoading(BuildContext context){
-   showDialog(
+ onLoading(BuildContext context){
+  return showDialog(
     context: context,
     builder:(BuildContext context) {
       return   Container(     

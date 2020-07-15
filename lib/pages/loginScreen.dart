@@ -1,31 +1,26 @@
 //import 'package:flutter/gestures.dart';
-import 'package:allo_doctor/Doctor/DoctorScreens/homeScreen.dart';
-import 'package:allo_doctor/models/auth.dart';
 import 'package:allo_doctor/pages/registrationScreen.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  final MainModel model;
+  LoginScreen(this.model);
   @override
   State<StatefulWidget> createState() {
     return _LoginScreen();
   }
 }
 
-class _LoginScreen extends State<LoginScreen> {
-  String userName;
-  String password;
-  AuthMode _authMode = AuthMode.Login;
+class _LoginScreen extends State<LoginScreen> { 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  final mainColor = LinearGradient(
-    // tileMode: TileMode.mirror,
-    //  begin: Alignment.topCenter,
-    //  end: Alignment.bottomCenter,
+
+  final mainColor = LinearGradient(   
     begin: FractionalOffset.topCenter,
-    //  end: FractionalOffset.bottomCenter,
     stops: [
       0.0,
       1.0,
@@ -46,7 +41,9 @@ class _LoginScreen extends State<LoginScreen> {
                   borderSide: BorderSide(color: Colors.white, width: 2.0))),
           keyboardType: TextInputType.emailAddress,
           cursorColor: Colors.white,
-          //onSaved: (String value){userName=value},
+          onSaved: (String value){
+         
+            },
         ));
   }
 
@@ -64,7 +61,6 @@ class _LoginScreen extends State<LoginScreen> {
                     borderSide: BorderSide(color: Colors.white, width: 2.0))),
             keyboardType: TextInputType.visiblePassword,
             textDirection: TextDirection.rtl,
-            // textAlign: TextAlign.right,
             style: TextStyle(color: Colors.white)
             //onSaved: (String value){password=value},
             ));
@@ -80,9 +76,14 @@ class _LoginScreen extends State<LoginScreen> {
         padding: EdgeInsets.symmetric(horizontal: 55.0),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => HomeScreenDr()));
+        onPressed: () async {
+       // widget.model.login(_userNameController.text, _passwordController.text);
+         await widget.model.login("omar","\$2a\$10\$7L3JKaAPOz9DX2.1oXoOkeypkD8bN2axYVOA1Xcw6YvVh42fty.3K");
+       if (widget.model.patient==null){
+         print("user does not exist");
+       
+       }
+         Navigator.pushNamed(context, "/homeScreenPatient");
         });
   }
 

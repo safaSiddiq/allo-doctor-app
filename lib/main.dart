@@ -1,3 +1,5 @@
+import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/pages/introScreen.dart';
 import 'package:allo_doctor/pages/loginScreen.dart';
 import 'package:allo_doctor/patient/patientScreens/callCenterScreen.dart';
@@ -38,6 +40,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   final MainModel model = MainModel();
   @override
   Widget build(BuildContext context) {
@@ -51,11 +54,11 @@ class MyApp extends StatelessWidget {
               //  primaryTextTheme: TextTheme(body1:TextStyle(color: Colors.white))
             ),
             routes: {
-              "/LoginScreen":(BuildContext context) => LoginScreen(),
+              "/LoginScreen":(BuildContext context) => LoginScreen(model),
               "/RegistrationASpatient":(BuildContext context) => RegistrationASpatient(model),
               "/RegistrationASdoctor":(BuildContext context) => RegistrationASdoctor(),
-              "/homeScreenPatient": (BuildContext context) =>
-                  HomeScreenPatient(),
+         
+              "/homeScreenPatient": (BuildContext context) => HomeScreenPatient(model),
               "/FillQueryScreen": (BuildContext context) =>
                   FillQueryScreen(model),
               "/CallCenterScreen": (BuildContext context) => CallCenterScreen(),
@@ -67,7 +70,7 @@ class MyApp extends StatelessWidget {
               "/DoctorFileScreen": (BuildContext context) => DoctorFileScreen(),
               "/DoctorsSearch": (BuildContext context) => DoctorsSearch(model),
               "/FillQueryDrScreen": (BuildContext context) =>
-                  FillQueryDrScreen(),
+                  FillQueryDrScreen(model,),
               "/MassagesScreen": (BuildContext context) => MassagesScreen(),
               "/MedicalFile": (BuildContext context) => MedicalFile(),
               "/PesronalinfoScreen": (BuildContext context) =>

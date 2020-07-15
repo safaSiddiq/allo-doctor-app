@@ -79,7 +79,7 @@ class _DrChatScreenState extends State<DrChatScreen> {
                     padding: EdgeInsets.only(top: 10.0),
                     itemCount: 2,
                     itemBuilder: (BuildContext context, int index) {
-                      //  bool isMe =true;
+                      //  bool isMe =false;
                       return  _buildMessage('messagsssssssssssse', '3:14', false);
                     },
                   ),

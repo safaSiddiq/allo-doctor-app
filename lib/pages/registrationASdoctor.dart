@@ -182,8 +182,7 @@ Doctor get doctor{
                 registrationButton(),
                 SizedBox(height: 10.0),
                 registrationRow(() {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                  Navigator.pushNamed(context, "/LoginScreen");
                 })
               ]))),
     ));

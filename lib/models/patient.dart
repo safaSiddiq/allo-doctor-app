@@ -1,7 +1,7 @@
 
 //import 'package:flutter/foundation.dart'
 
-import 'dart:convert';
+//import 'dart:convert';
 
 class Patient {
    String patientId;
@@ -11,12 +11,10 @@ class Patient {
   String birthdate;
   String gender;
   String avatar;
-  String userName;
-  String password;
   
   
   Patient({this.patientId, this.firstName, this.lastName,  this.email,
-      this.birthdate, this.gender, this.avatar,this.userName,this.password});
+      this.birthdate, this.gender, this.avatar,});
 
 
  factory Patient.fromJson(Map<String, dynamic> json) {
@@ -28,8 +26,6 @@ class Patient {
     birthdate : json['birthdate'],
     gender : json['gender'],
     avatar : json['avatar'],
-    userName: json["userName"],
-    password: json["password"]
    );
   }
 
@@ -42,7 +38,6 @@ class Patient {
     "birthdate" : birthdate,
     "gender" : gender,
    " avatar" : avatar,
-   "userName":userName,
-   "password":password
+   
   };
 }

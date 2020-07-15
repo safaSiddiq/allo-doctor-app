@@ -1,8 +1,7 @@
-import 'package:allo_doctor/patient/patientScreens/doctorFile.dart';
-import 'package:allo_doctor/patient/patientScreens/fillQueryDr.dart';
+import 'package:allo_doctor/models/doctor.dart';
 import 'package:flutter/material.dart';
 
-Widget doctorCard(BuildContext context,bool isOnline) {
+Widget doctorCard(BuildContext context,Doctor doctor,bool isOnline) {
   return 
    Directionality(
     textDirection: TextDirection.rtl,
@@ -11,7 +10,7 @@ Widget doctorCard(BuildContext context,bool isOnline) {
         //key: ValueKey(record.name),
         elevation: 0.0,
         //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)) ,
-        margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+       margin: EdgeInsets.only(top:10,bottom:5,left: 10,right: 10),
         child: Container(
           decoration:
               BoxDecoration(color: Colors.white, shape: BoxShape.circle),
@@ -20,8 +19,7 @@ Widget doctorCard(BuildContext context,bool isOnline) {
             leading:
                  Container(
                      width: 70,
-                   height: 70,
-              
+                   height: 70,  
                 padding: EdgeInsets.only(
                   right: 10.0,
                 ),
@@ -34,8 +32,10 @@ Widget doctorCard(BuildContext context,bool isOnline) {
                                 child: SizedBox(
                                     width: 70.0,
                                     height: 70.0,
-                                    child: Image.asset('assets/Doctor.png',
-                                        fit: BoxFit.fill)))),
+                                    child: doctor.avatar == null?
+                                    Image.asset('assets/Doctor.png',
+                                        fit: BoxFit.fill)
+                                        :Image.network(doctor.avatar.toString())))),
                 isOnline  ? Container(
               alignment: Alignment.bottomRight,
               child: Container(
@@ -55,7 +55,8 @@ Widget doctorCard(BuildContext context,bool isOnline) {
                   ],
                 )),    
             title: Text(
-              'محمد خالد',
+              doctor.firstName
+             ,
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
@@ -69,7 +70,7 @@ Widget doctorCard(BuildContext context,bool isOnline) {
                       SizedBox(height: 5),
                       RichText(
                         text: TextSpan(
-                          text: 'طبيب جراحة',
+                          text: doctor.major,
                           style: TextStyle(
                               color: Colors.blue, fontFamily: 'Tajawal-Medium'),
                         ),
@@ -91,8 +92,7 @@ Widget doctorCard(BuildContext context,bool isOnline) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => DoctorFileScreen()));
+                               Navigator.pushNamed(context, "/DoctorFileScreen");
                                 })),
                         SizedBox(width: 20),
                         Container(
@@ -108,8 +108,7 @@ Widget doctorCard(BuildContext context,bool isOnline) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => FillQueryDrScreen()));
+                                Navigator.pushNamed(context, "/FillQueryDrScreen");
                                 })),
                       ])
                     ]))

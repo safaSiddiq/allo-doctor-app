@@ -1,6 +1,10 @@
+import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 
 class FillQueryDrScreen extends StatefulWidget {
+ final MainModel model;
+  FillQueryDrScreen(this.model);
   @override
   _FillQueryDrScreen createState() => _FillQueryDrScreen();
 }
@@ -8,6 +12,7 @@ class FillQueryDrScreen extends StatefulWidget {
 class _FillQueryDrScreen extends State<FillQueryDrScreen> {
   bool isOnline = true;
   String _selectedText = "استعلام عام";
+
 
   final mainColor=  LinearGradient(
           begin: FractionalOffset.topCenter,
@@ -18,7 +23,7 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
             Color(0xFF2B95AF)
           ],
         );
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -135,8 +140,11 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                   margin: EdgeInsets.only(
                     left: 15.0,
                   ),
-                  child: DropdownButton<String>(
-                    iconDisabledColor: Colors.teal,
+                  child:  DropdownButtonHideUnderline(child: 
+                     DropdownButton<String>(
+                       icon: Container(
+                         child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
+                       ), 
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18,
@@ -156,7 +164,7 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                         _selectedText = val;
                       });
                     },
-                  )),
+                  ))),
               SizedBox(height: 20),
               Container(
                   alignment: Alignment.topRight,
