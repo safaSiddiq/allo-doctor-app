@@ -8,6 +8,8 @@ class Query {
   bool emergency;
   bool approved;
   String queryResultDate;
+  String patientId;
+  String doctorId;
 
   Query(
       {this.queryId,
@@ -19,7 +21,9 @@ class Query {
       this.emergency,
       this.approved,
      
-      this.queryResultDate}); 
+      this.queryResultDate,
+      this.patientId,
+      this.doctorId}); 
 
 
    Query.fromJson(Map<String, dynamic> json) {
@@ -31,8 +35,8 @@ class Query {
     approved = json['approved'];
     queryResult = json['queryResult'];
     queryResultDate = json['queryResultDate'];
-    //doctorId = json['doctorId'];
-    //patientId = json['patientId'];
+    doctorId = json['doctorId'];
+    patientId = json['patientId'];
   }
 
   Map<String, dynamic> toJson() {
@@ -45,8 +49,8 @@ class Query {
     data['approved'] = this.approved;
     data['queryResult'] = this.queryResult;
     data['queryResultDate'] = this.queryResultDate;
-    //data['doctorId'] = this.doctorId;
-    //data['patientId'] = this.patientId;
+    data['doctorId'] = this.doctorId;
+    data['patientId'] = this.patientId;
     return data;
   }
    

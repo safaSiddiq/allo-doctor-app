@@ -1,5 +1,4 @@
 
-import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
 import 'package:flutter/material.dart';
 
 class RegistrationScreen extends StatelessWidget {
@@ -43,8 +42,8 @@ decoration: BoxDecoration(
               RawMaterialButton(
                   child: _userKindButton('طبيب', 'assets/Doctor.png'),
                   onPressed: () {
-                    onLoading(context);
-                   Navigator.pushNamed(context, "/RegistrationASdoctor");
+                 
+                   Navigator.pushNamed(context, "/InvitationCkech");
                   }),
             ],
      ) )),

@@ -1,64 +1,67 @@
 import 'package:allo_doctor/Doctor/DoctorScreens/chatScreen.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/patientDiagnosises.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/patientMidicalFile.dart';
+import 'package:allo_doctor/models/patient.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 
-Widget patientCard(BuildContext context,bool isOnline) {
-  return 
-  Directionality(
+int calculateAge(DateTime birthDate) {
+
+  
+  DateTime currentDate = DateTime.now();
+  int age = currentDate.year - birthDate.year;
+  int month1 = currentDate.month;
+  int month2 = birthDate.month;
+  if (month2 > month1) {
+    age--;
+  } else if (month1 == month2) {
+    int day1 = currentDate.day;
+    int day2 = birthDate.day;
+    if (day2 > day1) {
+      age--;
+    }
+  }
+  return age;
+}
+
+Widget patientCard(BuildContext context, Patient _patient) {
+
+   MainModel model ;
+  var date = DateTime.parse(_patient.birthdate.substring(0, 10));
+  var age = calculateAge(date);
+  return Directionality(
     textDirection: TextDirection.rtl,
     child: Card(
-      color: Colors.white,
+        color: Colors.white,
         //key: ValueKey(record.name),
         elevation: 0.0,
-        //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)) ,
         margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 6.0),
         child: Container(
           decoration:
               BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: ListTile(
             contentPadding: EdgeInsets.only(top: 5, bottom: 10, right: 5),
-            leading:
-                 Container(
-                     width: 65,
-                   height: 65,
-              
-                padding: EdgeInsets.only(
-                  right: 10.0,
-                ),
-                child: Stack(
-                  children: <Widget>[
-                     CircleAvatar(
-                            radius: 41,
-                            backgroundColor: Colors.white,
-                            child: ClipOval(
-                                child: SizedBox(
-                                    width: 70.0,
-                                    height: 70.0,
-                                    child: Image.asset('assets/Patient.png',
-                                        fit: BoxFit.fill)))),
-                isOnline  ? Container(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                height: 15,
-                width: 15,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
-                  ),
-                  shape: BoxShape.circle,
-                  color: Colors.green,
-                ),
+            leading: Container(
+              width: 65,
+              height: 65,
+              padding: EdgeInsets.only(
+                right: 10.0,
               ),
-            )
-          : Container(),
-                  ],
-                )),
-                
-              
+              child:
+                  CircleAvatar(
+                      radius: 41,
+                      backgroundColor: Colors.white,
+                      child: ClipOval(
+                          child: SizedBox(
+                              width: 70.0,
+                              height: 70.0,
+                              child: _patient.avatar == "null"
+                                  ? Image.asset('assets/Patient.png',
+                                      fit: BoxFit.fill)
+                                  : Image.network(_patient.avatar)))),
+            ),
             title: Text(
-              'محمد خالد',
+              _patient.firstName + " " + _patient.lastName,
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
@@ -68,30 +71,36 @@ Widget patientCard(BuildContext context,bool isOnline) {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.start,
-                         textDirection: TextDirection.rtl,
-                         children: <Widget>[
-                           Text("العمر"" :",style: TextStyle(color:Colors.teal,fontWeight: FontWeight.bold),),
-                           SizedBox(width:4),
-                           Text("50 عام")
-
-                         ],
-                       ),
-                       SizedBox(height:4),
-                        Row(
-                          textDirection: TextDirection.rtl,
-                         children: <Widget>[
-                           Text("الجنس"" :",style: TextStyle(color:Colors.teal,fontWeight: FontWeight.bold),),
-                           SizedBox(width:4),
-                           Text("ذكر")
-                         ],
-                       ),
-                      SizedBox(height: 5),
                       Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                        
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        textDirection: TextDirection.rtl,
+                        children: <Widget>[
+                          Text(
+                            "العمر" " :",
+                            style: TextStyle(
+                                color: Colors.teal,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(width: 4),
+                          Text(age.toString())
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        textDirection: TextDirection.rtl,
+                        children: <Widget>[
+                          Text(
+                            "الجنس" " :",
+                            style: TextStyle(
+                                color: Colors.teal,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(width: 4),
+                          _patient.gender == "MALE" ? Text("ذكر") : Text("أنثى")
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(mainAxisSize: MainAxisSize.min, children: [
                         Container(
                             height: 25,
                             width: 80,
@@ -105,10 +114,11 @@ Widget patientCard(BuildContext context,bool isOnline) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => PatientDiagnosises()));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          PatientDiagnosises()));
                                 })),
-                         SizedBox(width:4),
+                        SizedBox(width: 4),
                         Container(
                             height: 25,
                             width: 70,
@@ -122,11 +132,13 @@ Widget patientCard(BuildContext context,bool isOnline) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => PatientMidicalFile()));
+                                     Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          PatientMidicalFile(model,_patient)));
+                              //  Navigator.pushNamed(context, "/PatientMidicalFile");
                                 })),
-                                SizedBox(width:4),
-                                  Container(
+                        SizedBox(width: 4),
+                        Container(
                             height: 25,
                             width: 80,
                             child: RaisedButton(
@@ -139,8 +151,8 @@ Widget patientCard(BuildContext context,bool isOnline) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DrChatScreen())); 
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => DrChatScreen()));
                                 })),
                       ])
                     ]))
@@ -148,6 +160,5 @@ Widget patientCard(BuildContext context,bool isOnline) {
             ),
           ),
         )),
-  
   );
 }

@@ -1,19 +1,22 @@
-import 'package:allo_doctor/Doctor/DoctorScreens/queryView.dart';
 import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/models/query.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomeScreenDr extends StatefulWidget {
+  final MainModel model;
+  HomeScreenDr(this.model);
   @override
   _HomeScreenDrState createState() => _HomeScreenDrState();
 }
 
 class _HomeScreenDrState extends State<HomeScreenDr> {
-  Doctor doctor =Doctor(avatar: "assets/Doctor.png",firstName: "ali",lastName: "ahmed",
-  gender: "",bio: "",birthdate: "",major: "",email: "");
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   bool isOnline = true;
-
-  int value = 0;
   bool _isDisabled = false;
+  int value = 0;
 
   final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
@@ -23,6 +26,25 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+
+  List<Query> _queries;
+  Future<Doctor> _doctor;
+  @override
+  void initState() {
+    widget.model.getDoctor().then((_) {
+      setState(() {
+        _doctor = widget.model.getDoctor();
+      });
+    });
+
+    widget.model.getQueries().then((_) {
+      setState(() {
+        _queries = widget.model.queries;
+      });
+    });
+
+    super.initState();
+  }
 
   Widget acceptQuery() {
     return Container(
@@ -40,8 +62,8 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                 setState(() {
                   value = 1;
                   _isDisabled = true;
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => QueryView()));
+                  // Navigator.of(context).push(
+                  //     MaterialPageRoute(builder: (context) => QueryView()));
                 });
               }),
           IconButton(
@@ -109,6 +131,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
 
   @override
   Widget build(BuildContext context) {
+    MainModel model;
     return Container(
         decoration: BoxDecoration(gradient: mainColor),
         child: Scaffold(
@@ -118,59 +141,65 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
               elevation: 0,
               backgroundColor: Color(0xFF0000),
               actions: <Widget>[
-                Container(
-                    padding: EdgeInsets.only(right: 5, top: 5, bottom: 5),
-                    child: Stack(
-                      textDirection: TextDirection.rtl,
-                      children: <Widget>[
-                        CircleAvatar(
-                            radius: 21,
-                            backgroundColor: Colors.white,
-                            child: ClipOval(
-                                child: SizedBox(
-                                    width: 40.0,
-                                    height: 40.0,
-                                    child:
-                                    doctor.avatar == null?
-                                         Image.asset("assets/Doctor.png",
-                                            fit: BoxFit.fill)
-                                            :  Image.asset("assets/Doctor.png",
-                                            fit: BoxFit.fill)
-                                        //  : FadeInImage(
-                                        //     image: AssetImage(doctor.avatar),
-                                        //     height: 300.0,
-                                        //     fit: BoxFit.cover,
-                                        //     placeholder:
-                                        //         AssetImage('assets/Doctor.png'),
-                                        //  )
-                                          ))),
-                        isOnline
-                            ? Container(
-                                alignment: Alignment.bottomRight,
-                                margin: EdgeInsets.only(right: 3, bottom: 5),
-                                child: Container(
-                                  height: 10,
-                                  width: 10,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 1,
-                                    ),
-                                    shape: BoxShape.circle,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              )
-                            : Container(),
-                      ],
-                    )),
+                FutureBuilder(
+                    future: _doctor,
+                    builder: (context, snapShot) {
+                      if (snapShot.hasData) {
+                        return Container(
+                            padding:
+                                EdgeInsets.only(right: 5, top: 5, bottom: 5),
+                            child: Stack(
+                              textDirection: TextDirection.rtl,
+                              children: <Widget>[
+                                CircleAvatar(
+                                    radius: 21,
+                                    backgroundColor: Colors.white,
+                                    child: ClipOval(
+                                        child: SizedBox(
+                                            width: 40.0,
+                                            height: 40.0,
+                                            child:
+                                                snapShot.data.avatar == "null"
+                                                    ? Image.asset(
+                                                        "assets/Doctor.png",
+                                                        fit: BoxFit.fill)
+                                                    : Image.network(
+                                                        snapShot.data.avatar,
+                                                        fit: BoxFit.fill)))),
+                                isOnline
+                                    ? Container(
+                                        alignment: Alignment.bottomRight,
+                                        margin: EdgeInsets.only(
+                                            right: 3, bottom: 5),
+                                        child: Container(
+                                          height: 10,
+                                          width: 10,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 1,
+                                            ),
+                                            shape: BoxShape.circle,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            ));
+                      } else {
+                        return Center(
+                            child: SpinKitFadingCircle(
+                          color: Color(0xFF87C9BF),
+                          size: 30,
+                        ));
+                      }
+                    })
               ],
             ),
             endDrawer: Drawer(
                 child: Container(
-                    decoration: BoxDecoration(color: Color(0xFF174160)
-                        //  color: Color(0xFF1B4C71)
-                        ),
+                    decoration: BoxDecoration(color: Color(0xFF174160)),
                     child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
@@ -181,75 +210,72 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                           Container(
                               padding: EdgeInsets.only(right: 10, left: 20),
                               child: Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: UserAccountsDrawerHeader(
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(
-                                      color: Colors.teal,
-                                    ))),
-                                    //margin: EdgeInsets.only(left:100.0),
-                                    accountName: Text("د." +
-                                        doctor.firstName +
-                                        doctor.lastName),
-                                    accountEmail: Text(doctor.email),
-                                    currentAccountPicture: Stack(
-                                      children: <Widget>[
-                                        CircleAvatar(
-                                            radius: 41,
-                                            backgroundColor: Colors.white,
-                                            child: ClipOval(
-                                                child: SizedBox(
-                                                    width: 70.0,
-                                                    height: 70.0,
-                                                    child: doctor.avatar == null
-                                                        ? Image.asset(
-                                                            'assets/Doctor.png',
-                                                            fit: BoxFit.fill)
-                                                        : Image.asset(
-                                                            doctor.avatar)))),
-                                        isOnline
-                                            ? Container(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                margin:
-                                                    EdgeInsets.only(right: 7),
-                                                child: Container(
-                                                  height: 15,
-                                                  width: 15,
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 1,
-                                                    ),
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.green,
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(),
-                                      ],
-                                    )),
-                              )),
-                          // Container(
-                          //   margin: EdgeInsets.only(right:18,left: 25),
-                          //   child:
-                          //  Divider(thickness: 1,color:  Colors.teal,)),
+                                  textDirection: TextDirection.rtl,
+                                  child: FutureBuilder(
+                                      future: _doctor,
+                                      builder: (context, snapShot) {
+                                        if (snapShot.hasData) {
+                                          return UserAccountsDrawerHeader(
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      bottom: BorderSide(
+                                                color: Colors.teal,
+                                              ))),
+                                              //margin: EdgeInsets.only(left:100.0),
+                                              accountName: Text("د." +
+                                                  " " +
+                                                  snapShot.data.firstName +
+                                                  "  " +
+                                                  snapShot.data.lastName),
+                                              accountEmail:
+                                                  Text(snapShot.data.email),
+                                              currentAccountPicture: Stack(
+                                                children: <Widget>[
+                                                  CircleAvatar(
+                                                      radius: 41,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      child: ClipOval(
+                                                          child: SizedBox(
+                                                              width: 70.0,
+                                                              height: 70.0,
+                                                              child: snapShot
+                                                                          .data
+                                                                          .avatar ==
+                                                                      "null"
+                                                                  ? Image.asset(
+                                                                      'assets/Doctor.png',
+                                                                      fit: BoxFit
+                                                                          .fill)
+                                                                  : Image.network(
+                                                                      snapShot
+                                                                          .data
+                                                                          .avatar)))),
+                                                ],
+                                              ));
+                                        } else {
+                                          return Center(
+                                              child: SpinKitFadingCircle(
+                                            color: Color(0xFF87C9BF),
+                                            size: 30,
+                                          ));
+                                        }
+                                      }))),
                           RawMaterialButton(
                             onPressed: () {
-                             Navigator.pushNamed(context, "/Queries");
+                              Navigator.pushNamed(context, "/Queries");
                             },
                             child: iconDrawer("الاستعلامات", Icons.inbox),
                           ),
                           RawMaterialButton(
                             onPressed: () {
-                             Navigator.pushNamed(context, "/DrMessageScreen");
+                              Navigator.pushNamed(context, "/DrMessageScreen");
                             },
                             child: iconDrawer("الرسائل", Icons.mail),
                           ),
                           RawMaterialButton(
                             onPressed: () {
-                            Navigator.pushNamed(context, "/PatientsScreen");
+                              Navigator.pushNamed(context, "/PatientsScreen");
                             },
                             child: iconDrawer("المرضى", Icons.people),
                           ),
@@ -264,6 +290,9 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                           ),
                           RawMaterialButton(
                             onPressed: () {
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //         builder: (context) =>
+                              //           PersonalDr(model)));
                               Navigator.pushNamed(context, "/DrPersonalInfo");
                             },
                             child: iconDrawer("بيانات شخصية", Icons.settings),
@@ -274,98 +303,142 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                                 "تسجيل خروج", Icons.power_settings_new),
                           ),
                         ])))),
-            body: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: ListView(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(right: 25),
-                    alignment: Alignment.topRight,
-                    child: Text('اخر الاستعلامات ',
-                        style: TextStyle(fontSize: 18, color: Colors.white)),
-                  ),
-                  Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                      margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          // Container(
-                          //   alignment: Alignment.center,
-                          //   padding: EdgeInsets.all(20),
-                          //   child: Text('لا يوجد ردود استعلامات'),
-                          // ),
-                          qoueryPreview('name'),
-                          SizedBox(height: 10),
-                          Container(
-                              height: 35,
-                              alignment: Alignment.bottomCenter,
-                              decoration: BoxDecoration(),
-                              child: RaisedButton(
-                                onPressed: () {
-                                 Navigator.pushNamed(context, "/Queries");
-                                },
-                                color: Colors.deepOrangeAccent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                child: Text(
-                                  "عرض الكل",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
+            body: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                onRefresh: _refresh,
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    child: FutureBuilder(
+                        future: _doctor,
+                        builder: (context, snapShot) {
+                          if (snapShot.hasData) {
+                            return ListView(
+                              children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.only(right: 25),
+                                  alignment: Alignment.topRight,
+                                  child: Text('اخر الاستعلامات ',
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white)),
                                 ),
-                              )),
-                          SizedBox(height: 10)
-                        ],
-                      )),
-                  SizedBox(height: 20),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        ' استعلامات عامة',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      )),
-                  SizedBox(height: 5),
-                  Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8)),
-                      margin: EdgeInsets.symmetric(horizontal: 15),
-                      child: Column(children: [
-                        qoueryPreview(''),
-                        Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            height: 35,
-                            alignment: Alignment.bottomCenter,
-                            decoration: BoxDecoration(),
-                            child: RaisedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, "/Queries");
-                              },
-                              color: Colors.deepOrangeAccent,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0)),
-                              child: Text(
-                                "عرض الكل",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                            ))
-                      ]))
-                ],
-              ),
-            )));
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 10),
+                                    margin: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        // Container(
+                                        //   alignment: Alignment.center,
+                                        //   padding: EdgeInsets.all(20),
+                                        //   child: Text('لا يوجد ردود استعلامات'),
+                                        // ),
+                                        // ListView.builder(
+                                        //   itemCount: _queries.length,
+                                        //   itemBuilder: (context,index)=>qoueryPreview("name")),
+                                        qoueryPreview("name"),
+                                        SizedBox(height: 10),
+                                        Container(
+                                            height: 35,
+                                            alignment: Alignment.bottomCenter,
+                                            decoration: BoxDecoration(),
+                                            child: RaisedButton(
+                                              onPressed: () {
+                                                Navigator.pushNamed(
+                                                    context, "/Queries");
+                                              },
+                                              color: Colors.deepOrangeAccent,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0)),
+                                              child: Text(
+                                                "عرض الكل",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12),
+                                              ),
+                                            )),
+                                        SizedBox(height: 10)
+                                      ],
+                                    )),
+                                SizedBox(height: 20),
+                                Container(
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 15),
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      ' استعلامات عامة',
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    )),
+                                SizedBox(height: 5),
+                                Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 15),
+                                    child: Column(children: [
+                                      qoueryPreview(''),
+                                      Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          height: 35,
+                                          alignment: Alignment.bottomCenter,
+                                          decoration: BoxDecoration(),
+                                          child: RaisedButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, "/Queries");
+                                            },
+                                            color: Colors.deepOrangeAccent,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0)),
+                                            child: Text(
+                                              "عرض الكل",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12),
+                                            ),
+                                          ))
+                                    ]))
+                              ],
+                            );
+                          } else {
+                            return Center(
+                                child: SpinKitFadingCircle(
+                              color: Color(0xFF87C9BF),
+                              size: 40,
+                            ));
+                          }
+                        })))));
+  }
+
+  Future _refresh() {
+    widget.model.getDoctor().then((_) {
+      setState(() {
+        _doctor = widget.model.getDoctor();
+      });
+    });
+    widget.model.getQueries().then((_) {
+      setState(() {
+        _queries = widget.model.queries;
+      });
+    });
+
+    return _doctor;
   }
 
   Widget acceptButton() {
     return RawMaterialButton(
         onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => QueryView()));
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: (context) => QueryView()));
         },
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),

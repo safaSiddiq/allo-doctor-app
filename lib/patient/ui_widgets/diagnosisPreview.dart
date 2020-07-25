@@ -1,4 +1,3 @@
-import 'package:allo_doctor/patient/patientScreens/diagnosisView.dart';
 import 'package:flutter/material.dart';
 
 Widget diagnosisPreview(BuildContext context, Color color){
@@ -35,8 +34,10 @@ Widget diagnosisPreview(BuildContext context, Color color){
            Container(
              alignment: Alignment.topLeft,
              child: RaisedButton(
-               onPressed:(){ Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => DiagnosisViewScreen()));},
+               onPressed:(){
+              //     Navigator.of( context).push(
+              // MaterialPageRoute(builder: (context) => DiagnosisViewScreen()));
+              },
              color: Colors.teal[200],
              shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20)),
              child: Text('عرض التشخيص',style: TextStyle(color:Colors.white,fontSize:11),),

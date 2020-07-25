@@ -1,7 +1,20 @@
+import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/models/patient.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
-class DoctorFileScreen extends StatelessWidget {
-final bool isOnline = true;
+class DoctorFileScreen extends StatefulWidget{
+  final MainModel model;
+ final Doctor doctor;
+ final dynamic snapShot;
+  DoctorFileScreen(this.model,this.doctor,this.snapShot);
+  @override
+  _DoctorFileScreen createState() => _DoctorFileScreen();
+}
+
+
+class _DoctorFileScreen extends State<DoctorFileScreen> {
 
 final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
@@ -12,10 +25,23 @@ final mainColor = LinearGradient(
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+ Doctor _doctor;
+  
+  Patient _patient;
 
+
+initState() {
+    super.initState();
+     setState(() {
+         _patient = widget.snapShot;
+         _doctor =widget.doctor;
+   });
+  }
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model) {
+          return Container(
       decoration: BoxDecoration(
         gradient: mainColor
       ),
@@ -38,25 +64,12 @@ final mainColor = LinearGradient(
                                 child: SizedBox(
                                     width: 40.0,
                                     height: 40.0,
-                                    child: Image.asset('assets/Patient.png',
-                                        fit: BoxFit.fill)))),
-                         isOnline  ? Container(
-             // alignment: Alignment.bottomLeft,
-              margin: EdgeInsets.only(top:25,left: 34),
-              child: Container(
-                height: 9,
-                width: 9,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 1,
-                  ),
-                  shape: BoxShape.circle,
-                  color: Colors.green,
-                ),
-              ),
-            )
-          : Container(),
+                                    child: _patient.avatar==""?
+                                    Image.asset('assets/Patient.png',
+                                        fit: BoxFit.fill)
+                                        :Image.network(_patient.avatar)
+                                        ))),
+                        
              ]),
              )
           ],
@@ -73,8 +86,11 @@ final mainColor = LinearGradient(
                       child: SizedBox(
                           width: 235.0,
                           height: 235.0,
-                          child: Image.asset('assets/Doctor.png',
-                              fit: BoxFit.fill)))),
+                          child: _doctor.avatar=="null"?
+                           Image.asset('assets/Doctor.png',
+                              fit: BoxFit.fill)
+                              :Image.network(_doctor.avatar)
+                              ))),
             ),
             SizedBox(height: 15),
             Row(
@@ -86,7 +102,7 @@ final mainColor = LinearGradient(
                     style: TextStyle(fontSize: 17, color: Colors.white),
                   ),
                   Text(
-                    'احمد خالد ',
+                    _doctor.firstName + " "+_doctor.lastName,
                     style: TextStyle(fontSize: 17, color: Colors.white),
                   )
                 ]),
@@ -101,7 +117,7 @@ final mainColor = LinearGradient(
                   ),
                   SizedBox(width: 20),
                   Text(
-                    'طبيب جراحة',
+                   _doctor.major,
                     style: TextStyle(fontSize: 17, color: Colors.white),
                   )
                 ]),
@@ -115,7 +131,7 @@ final mainColor = LinearGradient(
                       Icons.place,
                       color: Colors.white,
                     ),
-                    onPressed: () {}),
+                    onPressed: null),
                 Text(
                   'أماكن العمل',
                   textDirection: TextDirection.rtl,
@@ -141,7 +157,7 @@ final mainColor = LinearGradient(
                       Icons.library_books,
                       color: Colors.white,
                     ),
-                    onPressed: () {}),
+                    onPressed: null),
                 Text(
                   'السيرة الذاتية',
                   textDirection: TextDirection.rtl,
@@ -152,12 +168,20 @@ final mainColor = LinearGradient(
                 )
               ])),
           Container(
+            padding: EdgeInsets.symmetric(horizontal:15,vertical:10),
             margin: EdgeInsets.symmetric(horizontal: 20),
             height: 150,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20), color: Colors.white),
-            child: Text(''),
+            child: Directionality(textDirection: TextDirection.rtl, child: 
+             Text(_doctor.bio
+             ,style: TextStyle(
+               color: Colors.black,
+               fontSize: 16
+             ),)),
           ),
         ])));
+
+        });
   }
 }

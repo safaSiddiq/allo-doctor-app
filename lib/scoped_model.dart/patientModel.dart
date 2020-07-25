@@ -4,8 +4,7 @@ import 'dart:async';
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/models/query.dart';
-import 'package:flutter/cupertino.dart';
-//import 'package:flutter/material.dart';
+//import 'package:flutter/cupertino.dart';
 import "package:scoped_model/scoped_model.dart";
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,22 +18,25 @@ class ConnectedData extends Model {
   bool _isLoading = false;
   String token;
   String _patientId;
-  var _statusCode;
+  var _statusCodes;
 
-   get statusCode{
-    return _statusCode;
+   get statusCodes{
+    return _statusCodes;
   } 
 
   Patient get patient {
     return _patient;
   }
-
   // String get patientId {
   //   return _patientId;
   // }
 
   List<Doctor> get doctors {
     return _doctors;
+  }
+
+  List<Query> get queriesResults{
+    return _queriesResults;
   }
 }
 
@@ -45,25 +47,29 @@ class UtilityModel extends ConnectedData {
 }
 
 class PatientModel extends ConnectedData {
-  Future login(String username, String password) async {
+
+  Future login(String username, String password,String patientid) async {
+    print(_patientId);
     final http.Response response =
-        await http.post("http://192.168.1.36:3000/allo-doctors-logins",
+        await http.post("http://34.71.92.1:3000/allo-doctors-logins",
             headers: {
               "Accept": "Application/json",
               'Content-Type': 'Application/json',
-              "Authorization": "Bearer <$token>"
+              // "Authorization": "Bearer <$token>",
+
             },
             body: json.encode({
+              "patientId":patientid,
               "username": username,
               "password": password,
             }));
-    print("response stuse :${response.statusCode}");
+    print("response stuse login :${response.statusCode}");
     print("response body :${response.body}");
 
     final Map<dynamic, dynamic> responseData = json.decode(response.body);
 
-    Patient patient = Patient.fromJson(responseData);
-    _patient = patient;
+    // Patient patient = Patient.fromJson(responseData);
+    // _patient = patient;
 
     //print("token ::${responseData}");
     _saveId(responseData["patientId"]);
@@ -114,8 +120,8 @@ class PatientModel extends ConnectedData {
     // var data = json.decode(response.body);
     try {
       final http.Response response = await http.post(
-         "http://192.168.1.36:3000/patients",
-        //  "http://34.71.92.1:3000/patients",
+      //   "http://192.168.1.36:3000/patients",
+         "http://34.71.92.1:3000/patients",
           headers: {
             "Accept": "Application/json",
             "Content-Type": "application/json"
@@ -123,7 +129,7 @@ class PatientModel extends ConnectedData {
           body: jsonData);
       print("response stuse registration :${response.statusCode}");
       print("response body :${response.body}");
-      _statusCode = response.statusCode;
+      _statusCodes = response.statusCode;
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
@@ -184,9 +190,10 @@ class PatientModel extends ConnectedData {
 
 
   Future<Patient> getPatient() async {
+    print(_patientId);
    http.Response response = await http.get(
-      "http://192.168.1.36:3000/patients/$_patientId",
-      //  "http://34.71.92.1:3000/patients/$_patientId",
+    //  "http://192.168.1.36:3000/patients/$_patientId",
+        "http://34.71.92.1:3000/patients/$_patientId",
       headers: {
         "Accept": "Application/json",
         'Content-Type': 'Application/json'
@@ -194,7 +201,7 @@ class PatientModel extends ConnectedData {
     );
       print("response stuse get info :${response.statusCode}");
       print("response body :${response.body}");
-    _statusCode =response.statusCode;
+    _statusCodes =response.statusCode;
      var _patientData = json.decode(response.body);
   var  _newPatient =Patient(
       //  patientId: _patientId,
@@ -211,11 +218,17 @@ class PatientModel extends ConnectedData {
      // return Patient.fromJson(json.decode(response.body));
   
   }
-  Future<Null> writeQuery ({
+
+
+
+
+
+  Future<Null> writeQuery({
     String doctorId,
     String queryData,
     int queryType,
     String queryDate,
+   
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -226,9 +239,11 @@ class PatientModel extends ConnectedData {
       "doctorId":doctorId
     };
     try {
-      //final http.Response response =
+     print(_patientId);
+      //final thttp.Response response =
       await http
-          .post("http://192.168.1.36:3000/patients/${_patientId}/queries",
+      //.post("http://192.168.1.36:3000/patients/${_patientId}/queries",
+         .post("http://34.71.92.1:3000/patients/${_patientId}/queries",
               headers: {
                 "Accept": "Application/json",
                 'Content-Type': 'Application/json'
@@ -240,11 +255,13 @@ class PatientModel extends ConnectedData {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final Query newQuery = Query(
             queryId: responseData["queryId"],
-            queryData: queryData,
-            queryDate: queryDate,
-            queryType: queryType);
+            queryData: responseData["queryData"],
+            queryDate: responseData["queryDate"],
+            queryType: responseData["queryType"],
+            doctorId: responseData["doctorId"],
+            patientId: responseData["patientId"]);
         _queries.add(newQuery);
-        _statusCode =response.statusCode;
+        _statusCodes =response.statusCode;
         _isLoading = false;
         notifyListeners();
       });
@@ -254,34 +271,100 @@ class PatientModel extends ConnectedData {
     }
   }
 
+
+Future<Patient> updatePatientData({
+  String firstName,
+      String lastName,
+      String email,
+    //   String avatar,
+     String birthdate,
+    // String gender
+})async{
+
+  _isLoading = true;
+  notifyListeners();
+ final Map<String,dynamic> updateData = {
+ // "patientId":_patientId,
+   "firstName": firstName,
+      "lastName": lastName,
+      "email": email,
+       "birthdate": birthdate,
+      // "gender": gender,
+      // "avatar": avatar
+ };
+
+
+  final http.Response response = await http.patch("http://34.71.92.1:3000/patients/$_patientId",
+    headers: {
+                "Accept": "Application/json",
+                'Content-Type': 'Application/json',
+              },
+              body: json.encode(updateData)
+  );
+
+ _statusCodes =response.statusCode;
+     var _patientData = json.decode(response.body);
+ print("dfmg${response.statusCode}");
+ print("dfmg${response.body}");
+ print("jhiuhi$_patientId");
+     _isLoading = false;
+  notifyListeners();
+  var  _newPatient =Patient(
+      //  patientId: _patientId,
+        patientId: _patientData['patientId'],
+        firstName: _patientData['firstName'],
+        lastName: _patientData['lastName'],
+        birthdate: _patientData["birthdate"],
+        gender: _patientData["gender"],
+        avatar: _patientData["avatar"],
+        email: _patientData["email"],
+      );
+      _patient = _newPatient;
+     return _newPatient;
+  
+//  return  Patient.fromJson(json.decode(response.body));
+
+}
+
   Future getQueryResultData() async {
     _isLoading = true;
     notifyListeners();
-    return await http
-        .get("http://192.168.1.36:3000/allo-doctors-queries")
+     await http.get("http://34.71.92.1:3000/patients/ed4059a1-0f06-48f1-ab65-3e543cb08f5b/queries",
+        headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+        )
         .then<Null>((http.Response response) {
       final List<Query> getQueriesList = [];
-      final Map<String, dynamic> queriesList = json.decode(response.body);
-      if (queriesList == null) {
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      queriesList.forEach((String queryId, dynamic queryData) {
+      final List<dynamic> queriesList = json.decode(response.body);
+      print("response doctors stuse get queries :${response.statusCode}");
+      print("response body :${response.body}");
+      // if (queriesList == null) {
+      //   _isLoading = false;
+      //   notifyListeners();
+      //   return;
+      // }
+      queriesList.forEach(( dynamic queryData) {
         final query = Query(
-            queryId: queryId,
-            queryResult: queryData["queryData"],
-            queryResultDate: queryData['queryData']);
+             queryId: queryData["queryId"],
+          queryData: queryData['queryData'],
+          queryDate: queryData['queryDate'],
+          queryType: queryData["queryType"],
+          queryResult: queryData["queryResult"],
+           queryRequestDate: queryData["queryRequestDate"],
+          queryResultDate: queryData["queryResultDate"],
+          emergency: queryData["emergency"],
+          approved: queryData["approved"],
+          patientId: queryData["patientId"],
+          doctorId: queryData["doctorId"]);
         getQueriesList.add(query);
       });
 
       _queriesResults = getQueriesList;
       _isLoading = false;
       notifyListeners();
-    }).catchError((Error) {
-      _isLoading = false;
-      notifyListeners();
-      return;
+   
     });
   }
 
@@ -289,8 +372,8 @@ class PatientModel extends ConnectedData {
     _isLoading =true;
     notifyListeners();
     await http.get(
-    "http://192.168.1.36:3000/doctors",
-    //"http://34.71.92.1:3000//doctors",
+   // "http://192.168.1.36:3000/doctors",
+    "http://34.71.92.1:3000//doctors",
 
       headers: {
         "Accept": "Application/json",
@@ -322,4 +405,87 @@ class PatientModel extends ConnectedData {
     _isLoading =false;
     notifyListeners();
   }
+
+
+  
+  Future<Null> writeQueryDr({
+   String patientId,
+    String doctorId,
+    String queryData,
+    int queryType,
+    String queryDate,
+   
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> query = {
+      "queryData": queryData,
+      "queryType": queryType,
+      "queryDate":queryDate,
+      "doctorId":doctorId
+    };
+    try {
+    
+      //final thttp.Response response =
+      await http
+      //.post("http://192.168.1.36:3000/patients/${_patientId}/queries",
+         .post("http://34.71.92.1:3000/patients/${patientId}/queries",
+              headers: {
+                "Accept": "Application/json",
+                'Content-Type': 'Application/json'
+              },
+              body: json.encode(query))
+          .then<Null>((http.Response response) {
+        print("response stuse send query :${response.statusCode}");
+        print("response body :${response.body}");
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Query newQuery = Query(
+            queryId: responseData["queryId"],
+            queryData: responseData["queryData"],
+            queryDate: responseData["queryDate"],
+            queryType: responseData["queryType"],
+            doctorId: responseData["doctorId"],
+            patientId: responseData["patientId"]);
+        _queries.add(newQuery);
+        _statusCodes =response.statusCode;
+        _isLoading = false;
+        notifyListeners();
+      });
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+
+   Future<Doctor> getDoctorData(String id) async {  
+   http.Response response = await http.get(
+   "http://34.71.92.1:3000/doctors/$id",
+      headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+    );
+      print("response stuse get info dr :${response.statusCode}");
+      print("response body :${response.body}");
+   
+     var _doctorData = json.decode(response.body);
+  var  _newDoctor =Doctor(
+      //  patientId: _patientId,
+        doctorId: _doctorData['doctorId'],
+        firstName: _doctorData['firstName'],
+        lastName: _doctorData['lastName'],
+        birthdate: _doctorData["birthdate"],
+        gender: _doctorData["gender"],
+        major: _doctorData["major"],
+        avatar: _doctorData["avatar"],
+        bio: _doctorData["bio"],
+        email: _doctorData["email"],
+
+      );
+    return  _newDoctor;
+     // return Patient.fromJson(json.decode(response.body));
+  }
+
+
 }

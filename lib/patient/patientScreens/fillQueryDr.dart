@@ -1,10 +1,20 @@
 import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/models/patient.dart';
+import 'package:allo_doctor/models/query.dart';
+import 'package:allo_doctor/pages/ui_widgets/doneWidget.dart';
+import 'package:allo_doctor/pages/ui_widgets/wrongWidget.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart'as http;
 
 class FillQueryDrScreen extends StatefulWidget {
- final MainModel model;
-  FillQueryDrScreen(this.model);
+final MainModel model;
+ final Doctor doctor;
+ final dynamic snapShot;
+  FillQueryDrScreen(this.model,this.doctor,this.snapShot);
   @override
   _FillQueryDrScreen createState() => _FillQueryDrScreen();
 }
@@ -12,7 +22,11 @@ class FillQueryDrScreen extends StatefulWidget {
 class _FillQueryDrScreen extends State<FillQueryDrScreen> {
   bool isOnline = true;
   String _selectedText = "استعلام عام";
-
+  Query _query;
+  Doctor _doctor;
+  //Future<Patient> _patient;
+  Future<Patient> _patient;
+  TextEditingController _queryDataController =TextEditingController();
 
   final mainColor=  LinearGradient(
           begin: FractionalOffset.topCenter,
@@ -23,10 +37,58 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
             Color(0xFF2B95AF)
           ],
         );
+
+
+  Future<Patient> getPatient() async {
+    var id = widget.snapShot.patientId;
+
+   http.Response response = await http.get(
+    //  "http://192.168.1.36:3000/patients/$_patientId",
+        "http://34.71.92.1:3000/patients/$id",
+      headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+    );
+      print("response stuse get info :${response.statusCode}");
+      print("response body :${response.body}");
+   
+     var _patientData = json.decode(response.body);
+  var  _newPatient =Patient(
+      //  patientId: _patientId,
+        patientId: _patientData['patientId'],
+        firstName: _patientData['firstName'],
+        lastName: _patientData['lastName'],
+        birthdate: _patientData["birthdate"],
+        gender: _patientData["gender"],
+        avatar: _patientData["avatar"],
+        email: _patientData["email"],
+      );
+    
+       return  _newPatient;
+    
   
+  }
+
+initState() {
+    getPatient().then((_){
+      setState(() {
+        _patient = getPatient();
+      });
+      
+    });
+  
+    super.initState();
+     setState(() {
+         _doctor =widget.doctor;
+   });
+  }
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model) {
+          return 
+      Container(
  decoration: BoxDecoration(
    gradient: mainColor
  ),
@@ -36,7 +98,12 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Color(0xFF0000),
-          actions: <Widget>[
+          actions: <Widget>[   
+           FutureBuilder(
+     future: _patient,
+      builder: (context,snapShot){
+        if(snapShot.hasData){
+          return 
             Container(
                 width: 38,
                 height: 38,
@@ -52,8 +119,11 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                             child: SizedBox(
                                 width: 32.0,
                                 height: 32.0,
-                                child: Image.asset('assets/Patient.png',
-                                    fit: BoxFit.fill)))),
+                                child://snapShot.data.avatar=="null"?
+                                Image.asset('assets/Patient.png',
+                                    fit: BoxFit.fill)
+                                   // :Image.network(snapShot.data.avatar)
+                                    ))),
                     isOnline
                         ? Container(
                             alignment: Alignment.bottomRight,
@@ -75,7 +145,13 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                           )
                         : Container(),
                   ],
-                )),
+                ));
+                   }return Center(
+                                child: SpinKitFadingCircle(
+                              color: Color(0xFF2B95AF),
+                              size: 28,
+                            ));
+      })
           ],
         ),
         body: Container(
@@ -94,8 +170,9 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                       child: SizedBox(
                         width: 36.0,
                         height: 36.0,
-                        child:
-                            Image.asset('assets/Doctor.png', fit: BoxFit.fill),
+                        child: _doctor.avatar== "null"?
+                            Image.asset('assets/Doctor.png', fit: BoxFit.fill)
+                            :Image.network(_doctor.avatar)
                         // child: (_image!=null)?Image.file(
                         //   _image,
                         //   fit: BoxFit.fill,
@@ -115,7 +192,7 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                       Text(
-                        'احمد خالد',
+                        _doctor.firstName + " "+_doctor.lastName,
                         style: TextStyle(color: Colors.white, fontSize: 13),
                       )
                     ],
@@ -176,13 +253,56 @@ class _FillQueryDrScreen extends State<FillQueryDrScreen> {
               SizedBox(height: 5),
               query(),
               SizedBox(height: 15),
-              sendButton(() {}),
+             FutureBuilder(
+               future: _patient,
+               builder: (context,snapShot){
+               if (snapShot.hasData){
+                 return 
+              
+              sendButton(() async {
+               
+                // widget.model.isLoading ? onLoading(context) : null;
+                   await   widget.model.writeQueryDr(
+                     patientId:snapShot.data.patientId ,
+                          queryData: _queryDataController.text,
+                          queryType: 1,
+                          queryDate: DateTime.now().toUtc().toIso8601String(),
+                          doctorId: _doctor.doctorId
+                         // doctorId: "6234f0d1-4822-41bb-8aed-15be668dcb04",
+                         // patientId: "6bd62458-25ac-475b-aaf9-d6ea527a6d71"
+                          );
+
+                      if (widget.model.statusCodes == 200) {
+                        doneWidget(context);
+                       await Future.delayed(Duration(seconds: 2)).then((_){
+                      
+                              Navigator.pushNamed(context, "/homeScreenPatient");
+                        });
+                   
+                      } else if (widget.model.statusCodes != 200) {
+                         wrongWidget(context);
+                          await Future.delayed(Duration(seconds: 2)).then((_){
+                            Navigator.pop(context);
+                        });
+                      }    
+              });
+               }else{
+                 return Center(
+                                child: SpinKitFadingCircle(
+                              color: Color(0xFF2B95AF),
+                              size: 28,
+                            ));
+               }
+             }),
               SizedBox(height: 15)
             ],
           ),
         )));
+    
+      
+
+      });
   }
-}
 
 Widget query() {
   return Container(
@@ -194,14 +314,19 @@ Widget query() {
       ),
       child: Directionality(
           textDirection: TextDirection.rtl,
-          child: TextField(
+          child: TextFormField(
+            controller: _queryDataController,
               textDirection: TextDirection.rtl,
               maxLines: 25,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
                 hintText: 'اكتب الاستعلام',
-              ))));
+              ),
+              onSaved: (String value){
+                _query.queryData = value;
+              },
+              )));
 }
 
 Widget sendButton(Function function) {
@@ -220,4 +345,5 @@ Widget sendButton(Function function) {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
           onPressed: function));
+}
 }

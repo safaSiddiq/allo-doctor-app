@@ -1,8 +1,9 @@
 //import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:allo_doctor/models/doctor.dart';
-import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
+import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../ui_widgets/doctorCard.dart';
 
@@ -14,7 +15,6 @@ class DoctorsSearch extends StatefulWidget {
 }
 
 class _DoctorsSearchState extends State<DoctorsSearch> {
-
   TextEditingController editingController = TextEditingController();
   String _selectedText1 = "بالتخصص";
   String _selectedText2 = "بالدرجة العلمية";
@@ -28,14 +28,22 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
-  List<Doctor> _doctors ;
+  List<Doctor> _doctors;
+  Future<Patient> _patient;
   @override
   initState() {
-    widget.model.fetchDoctorsData();
-       _doctors = widget.model.doctors;
-  setState(() {
-    
-  });
+    widget.model.getPatient().then((_) {
+      setState(() {
+        _patient = widget.model.getPatient();
+      });
+    });
+
+    widget.model.fetchDoctorsData().then((_) {
+      setState(() {
+        _doctors = widget.model.doctors;
+      });
+    });
+
     super.initState();
   }
 
@@ -81,127 +89,137 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                                   onPressed: () {}))),
                     ],
                     bottom: PreferredSize(
-                      preferredSize: Size(double.infinity, 80),
-                      child: Container(
-                                  padding: EdgeInsets.only(bottom:6),
-                                  child:
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            SizedBox(width: 24),
-                            RaisedButton(
-                                onPressed: () {},
-                                color: Colors.white,
-                                textColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                child: 
-                                Row(  
-                                    textDirection: TextDirection.rtl,
-                                    children: [
-                                      Text(
-                                        ' بالـإسم',
-                                        style: TextStyle(fontSize: 11),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      Icon(
-                                        Icons.arrow_upward,
-                                        size: 13,
-                                        color: Color(0xFF2B95AF),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_downward,
-                                        size: 13,
-                                        color: Color(0xFF2B95AF),
-                                      ),
-                                    ])),
-                            SizedBox(width: 8),
-                            Container(
-                                height: 35,
-                                padding: EdgeInsets.only(left: 6),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
+                        preferredSize: Size(double.infinity, 80),
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 6),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                SizedBox(width: 24),
+                                RaisedButton(
+                                    onPressed: () {},
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                  icon: Container(
-                                    //padding: EdgeInsets.only(left:5,right: 2),
-                                    child: Icon(
-                                      Icons.arrow_drop_down,
-                                      size: 24,
-                                      color: Color(0xFF2B95AF),
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 11,
-                                      fontFamily: 'Tajawal-Medium'),
-                                  //hint: Text('الجنس'),
-                                  value: _selectedText1,
-                                  items: <String>['بالتخصص', 'أنثى']
-                                      .map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String val) {
-                                    _selectedText1 = val;
-                                    setState(() {
-                                      _selectedText1 = val;
-                                    });
-                                  },
-                                ))),
-                            SizedBox(width: 8),
-                            Container(
-                                height: 35,
-                                padding: EdgeInsets.only(left: 6),
-                                alignment: Alignment.topRight,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                  icon: Container(
-                                    // padding: EdgeInsets.only(left:2),
-                                    child: Icon(
-                                      Icons.arrow_drop_down,
-                                      size: 24,
-                                      color: Color(0xFF2B95AF),
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 11,
-                                      fontFamily: 'Tajawal-Medium'),
-                                  //hint: Text('الجنس'),
-                                  value: _selectedText2,
-                                  items: <String>['بالدرجة العلمية', 'أنثى']
-                                      .map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String val) {
-                                    _selectedText2 = val;
-                                    setState(() {
-                                      _selectedText2 = val;
-                                    });
-                                  },
-                                ))),
-                          ]),
-                     ) ),
+                                    textColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0)),
+                                    child: Row(
+                                        textDirection: TextDirection.rtl,
+                                        children: [
+                                          Text(
+                                            ' بالـإسم',
+                                            style: TextStyle(fontSize: 11),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          Icon(
+                                            Icons.arrow_upward,
+                                            size: 13,
+                                            color: Color(0xFF2B95AF),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_downward,
+                                            size: 13,
+                                            color: Color(0xFF2B95AF),
+                                          ),
+                                        ])),
+                                SizedBox(width: 8),
+                                Container(
+                                    height: 35,
+                                    padding: EdgeInsets.only(left: 6),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(5.0)),
+                                    child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                      icon: Container(
+                                        //padding: EdgeInsets.only(left:5,right: 2),
+                                        child: Icon(
+                                          Icons.arrow_drop_down,
+                                          size: 24,
+                                          color: Color(0xFF2B95AF),
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 11,
+                                          fontFamily: 'Tajawal-Medium'),
+                                      //hint: Text('الجنس'),
+                                      value: _selectedText1,
+                                      items: <String>['بالتخصص', 'أنثى']
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String val) {
+                                        _selectedText1 = val;
+                                        setState(() {
+                                          _selectedText1 = val;
+                                        });
+                                      },
+                                    ))),
+                                SizedBox(width: 8),
+                                Container(
+                                    height: 35,
+                                    padding: EdgeInsets.only(left: 6),
+                                    alignment: Alignment.topRight,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(5.0)),
+                                    child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                      icon: Container(
+                                        // padding: EdgeInsets.only(left:2),
+                                        child: Icon(
+                                          Icons.arrow_drop_down,
+                                          size: 24,
+                                          color: Color(0xFF2B95AF),
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 11,
+                                          fontFamily: 'Tajawal-Medium'),
+                                      //hint: Text('الجنس'),
+                                      value: _selectedText2,
+                                      items: <String>['بالدرجة العلمية', 'أنثى']
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String val) {
+                                        _selectedText2 = val;
+                                        setState(() {
+                                          _selectedText2 = val;
+                                        });
+                                      },
+                                    ))),
+                              ]),
+                        )),
                   )),
-              body:ListView.builder(
-                itemCount: _doctors.length,
-                
-                itemBuilder: (context,index)=>
-                  doctorCard(context,_doctors[index], true)
-             
-                )
+              body: FutureBuilder(
+                  future: _patient,
+                  builder: (context, snapShot) {
+                    if (snapShot.hasData) {
+                      return ListView.builder(
+                          itemCount: _doctors.length,
+                          itemBuilder: (context, index) => doctorCard(
+                              context, _doctors[index], snapShot.data, ));
+                    }
+                    return Center(
+                        child: SpinKitFadingCircle(
+                      color: Color(0xFF87C9BF),
+                      //  color: Color(0xFF2B95AF),
+                      size: 35,
+                    ));
+                  })
               //  ListView(
               //   children: <Widget>[
               //     SizedBox(height: 10),
@@ -211,8 +229,7 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
               //     doctorCard(context, true),
               //     doctorCard(context, true),
               //     doctorCard(context, true)],)
-              )
-              );
+              ));
     });
   }
 }

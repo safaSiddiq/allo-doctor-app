@@ -1,6 +1,5 @@
 
 import 'package:allo_doctor/patient/ui_widgets/diagnosisPreview.dart';
-import 'package:allo_doctor/patient/ui_widgets/queryReplyCard.dart';
 import 'package:flutter/material.dart';
 
 class CallCenterScreen extends StatefulWidget {
@@ -133,9 +132,9 @@ class _CallCenterScreenState extends State<CallCenterScreen> {
               child: 
               Column(
                 children: <Widget>[
-                  queryReplyCard(context,"تم القبول",true),
-                  queryReplyCard(context,"تم الرفض",true),
-                  queryReplyCard(context,"في انتظار الرد",true)
+                  // queryReplyCard(context,"تم القبول",true),
+                  // queryReplyCard(context,"تم الرفض",true),
+                  // queryReplyCard(context,"في انتظار الرد",true)
                 ],
               )
             ),

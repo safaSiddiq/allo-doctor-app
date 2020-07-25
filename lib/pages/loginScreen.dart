@@ -78,7 +78,7 @@ class _LoginScreen extends State<LoginScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
         onPressed: () async {
        // widget.model.login(_userNameController.text, _passwordController.text);
-         await widget.model.login("omar","\$2a\$10\$7L3JKaAPOz9DX2.1oXoOkeypkD8bN2axYVOA1Xcw6YvVh42fty.3K");
+        // await widget.model.login("omar","\$2a\$10\$7L3JKaAPOz9DX2.1oXoOkeypkD8bN2axYVOA1Xcw6YvVh42fty.3K");
        if (widget.model.patient==null){
          print("user does not exist");
        

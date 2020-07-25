@@ -1,29 +1,24 @@
 
-import 'package:allo_doctor/models/doctor.dart';
-import 'package:allo_doctor/pages/invitationCheck.dart';
-import 'package:allo_doctor/pages/loginScreen.dart';
-
+import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
 import 'package:allo_doctor/pages/ui_widgets/registrationRow.dart';
+import 'package:allo_doctor/pages/ui_widgets/wrongWidget.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 
 class RegistrationASdoctor extends StatefulWidget {
+
+  final MainModel model;
+  RegistrationASdoctor(this.model);
   @override
   _RegistrationASdoctor createState() => _RegistrationASdoctor();
 }
 
 class _RegistrationASdoctor extends State<RegistrationASdoctor> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
- Doctor _doctor;
+ DateTime _birthdate;
 
-Doctor get doctor{
-    if (_doctor == null ){
-      _doctor = Doctor();
-    }
-  return _doctor;
-  }
-
-  String _selectedText = 'اختر التخصص';
+  
    String _selectedText1 = 'الجنس';
 
  TextEditingController _firstNameController = TextEditingController();
@@ -31,8 +26,8 @@ Doctor get doctor{
   TextEditingController _emailController = TextEditingController();
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
-   
+  TextEditingController _bioController =TextEditingController();
+   TextEditingController _majorController = TextEditingController();
 
   final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
@@ -43,6 +38,32 @@ Doctor get doctor{
     colors: [Color(0xFF87C9BF),
      Color(0xFF2B95AF)],
   );
+
+   _onPressed() async {
+    await widget.model.registrationDoctor(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      email: _emailController.text,
+      birthdate: _birthdate.toUtc().toIso8601String(),
+      gender: "male",
+      avatar: "",
+      major: _majorController.text,
+      bio:_bioController.text
+    );
+
+    if (widget.model.statusCode == 200) {
+
+      Navigator.pushNamed(context, "/HomeScreenDr");
+    } else if (widget.model.statusCode != 200) {
+      wrongWidget(context);
+      Future.delayed(Duration(seconds: 1)).then((_) {
+       Navigator.pop(context);
+      });
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,51 +83,45 @@ Doctor get doctor{
                 firstName(),
                 SizedBox(height: 20.0),
                 lastName(),   
-                SizedBox(height: 20.0),
-                Container(
-
-                    alignment: Alignment.bottomRight,
-                
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    margin: EdgeInsets.only(
-                      left: 120.0,
-                    ),
-                    child: DropdownButtonHideUnderline(child: 
-                     DropdownButton<String>(
-                       icon: Container(      
-                         padding: EdgeInsets.only(left: 7),
-                         child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
-                       ),          
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'Tajawal-Medium',            
-                      ),
-                      value: _selectedText,
-                      items: <String>[
-                        'اختر التخصص',
-                        'طبيب جراحة',         
-                        "طبيب باطينية",
-                        "طبيب نساء",
-                        "طبيب أذن و حنجرة",
-                        "طبيب قلب",
-                        "طبيب أسنان",
-                        'طبيب عيون'
-                      ].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String val) {       
-                        setState(() {
-                          _selectedText = val;
-                          doctor.major=_selectedText;
-                        });
-                      },
-                    ))),
+               
+                    // child: DropdownButtonHideUnderline(child: 
+                    //  DropdownButton<String>(
+                    //    icon: Container(      
+                    //      padding: EdgeInsets.only(left: 7),
+                    //      child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
+                    //    ),          
+                    //   style: TextStyle(
+                    //     color: Colors.black,
+                    //     fontSize: 18,
+                    //     fontFamily: 'Tajawal-Medium',            
+                    //   ),
+                    //   value: _selectedText,
+                    //   items: <String>[
+                    //     'اختر التخصص',
+                    //     'طبيب جراحة',         
+                    //     "طبيب باطينية",
+                    //     "طبيب نساء",
+                    //     "طبيب أذن و حنجرة",
+                    //     "طبيب قلب",
+                    //     "طبيب أسنان",
+                    //     'طبيب عيون'
+                    //   ].map((String value) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: value,
+                    //       child: Text(value),
+                    //     );
+                    //   }).toList(),
+                    //   onChanged: (String val) {       
+                    //     setState(() {
+                    //       _selectedText = val;
+                    //     setState(() {
+                    //       _major =_selectedText;
+                    //     });
+                    //     });
+                    //   },
+                    // ))
+                    SizedBox(height:5),
+                    major(),
                 SizedBox(height: 10.0),
                 emailAdress(),
                 SizedBox(height: 20.0),
@@ -119,12 +134,12 @@ Doctor get doctor{
                DatePickerWidget(
                   onChange:(DateTime value,slectedIndex){
                     setState(() {
-                       doctor.birthdate= value.toString();
+                       _birthdate= value;
                     });
                     },
-                    initialDateTime: DateTime(1980),
-                    minDateTime: DateTime(1980),
-                    maxDateTime: DateTime(2020),
+                    initialDateTime: DateTime(1980).toUtc(),
+                    minDateTime: DateTime(1980).toUtc(),
+                    maxDateTime: DateTime(2020).toUtc(),
                     locale: DateTimePickerLocale.ar,
                     pickerTheme: DateTimePickerTheme(
                         showTitle: false,
@@ -161,7 +176,7 @@ Doctor get doctor{
                       onChanged: (String val) {
                         setState(() {
                           _selectedText1 = val;
-                          doctor.gender=val;
+                        
                         });
                       },
                     ))),
@@ -179,7 +194,15 @@ Doctor get doctor{
                 SizedBox(height: 10.0),
                 bio(),
                 SizedBox(height: 20.0),
-                registrationButton(),
+                registrationButton(()async{
+                     await  _onPressed();
+                   if (widget.model.isLoading == true) {
+                        onLoading(context);
+                        await Future.delayed(_onPressed().then((_) {
+                          Navigator.pushNamed(context, "/HomeScreenDr");
+                        })); 
+                   }   
+                }),
                 SizedBox(height: 10.0),
                 registrationRow(() {
                   Navigator.pushNamed(context, "/LoginScreen");
@@ -206,7 +229,7 @@ Widget firstName() {
         keyboardType: TextInputType.text,
         cursorColor: Colors.white,
         onSaved: (String value){
-          doctor.firstName = value;
+       
         },
       ));
 }
@@ -224,7 +247,7 @@ Widget lastName() {
         keyboardType: TextInputType.emailAddress,
         cursorColor: Colors.white,
         onSaved: (String value){
-          doctor.lastName = value;
+      
         },
       ));
 }
@@ -243,7 +266,7 @@ Widget emailAdress() {
         keyboardType: TextInputType.emailAddress,
         cursorColor: Colors.white,
         onSaved: (String value){
-          doctor.email=value;
+      
         },
       ));
 }
@@ -286,18 +309,19 @@ Widget passwordField() {
 Widget bio() {
   return Directionality(textDirection: TextDirection.rtl, child: 
   TextFormField(
+    controller: _bioController,
     decoration: InputDecoration(
       fillColor: Colors.white,
       filled: true,
     ),
     maxLines: 10,
     onSaved: (String value){
-      doctor.bio = value;
+ 
     }
   ));
 }
 
- Widget registrationButton() {
+ Widget registrationButton(Function function) {
     return Container(
       height: 43.0,
       child:
@@ -312,9 +336,24 @@ Widget bio() {
         padding: EdgeInsets.symmetric(horizontal: 50.0),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        onPressed: (){
-             Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => InvitationCkech()));
-        }) );
+        onPressed:function) );
   }
+
+  Widget major() {
+  return Directionality(
+      textDirection: TextDirection.rtl,
+      child: TextFormField(
+       controller: _majorController,
+        textDirection: TextDirection.rtl,
+        decoration: InputDecoration(
+          labelText: 'التخصص',
+          labelStyle: TextStyle(color: Colors.white,fontSize: 18),
+          enabledBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white,width: 2.0)),
+        ),
+        keyboardType: TextInputType.emailAddress,
+        cursorColor: Colors.white,
+        //onSaved: (String value){userName=value},
+      ));
+}
 }

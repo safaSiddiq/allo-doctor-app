@@ -1,19 +1,34 @@
+import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/pages/ui_widgets/doneWidget.dart';
 import 'package:allo_doctor/patient/patientScreens/medicalFile.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DrPersonalInfo extends StatefulWidget {
+  final MainModel model;
+
+  DrPersonalInfo(this.model);
   @override
   _DrPersonalInfoState createState() => _DrPersonalInfoState();
 }
 
 class _DrPersonalInfoState extends State<DrPersonalInfo> {
-  bool isOnline = true;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _bioController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   final myController = TextEditingController();
   String inputData = "";
   bool boolValue = false;
 
-   final mainColor = LinearGradient(
+  final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
     stops: [
       0.0,
@@ -21,303 +36,406 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+
+  final Map<String, dynamic> _formData = {
+    "firstName": null,
+    "lastName": null,
+    "email": null,
+    "bio": null,
+    "birthdate": null
+  };
+
+  Future<Doctor> getDoctor() async {
+    var id = "d44adeef-03fe-4af6-8ef0-b6c7db377d2f";
+    http.Response response = await http.get(
+      //  "http://192.168.1.36:3000/patients/$_patientId",
+
+      // "http://34.71.92.1:3000/doctors/$_doctorId",//1fef50ee-7c82-4a6e-9de5-db5a1ed0ec07
+      "http://34.71.92.1:3000/doctors/$id",
+      headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+    );
+    print("response stuse get info dr :${response.statusCode}");
+    print("response body :${response.body}");
+
+    var _doctorData = json.decode(response.body);
+    var _newDoctor = Doctor(
+      //  patientId: _patientId,
+      doctorId: _doctorData['doctorId'],
+      firstName: _doctorData['firstName'],
+      lastName: _doctorData['lastName'],
+      birthdate: _doctorData["birthdate"],
+      gender: _doctorData["gender"],
+      major: _doctorData["major"],
+      avatar: _doctorData["avatar"],
+      bio: _doctorData["bio"],
+      email: _doctorData["email"],
+    );
+    return _newDoctor;
+    // return Patient.fromJson(json.decode(response.body));
+  }
+
+  Future<Doctor> _doctor;
+  @override
+  void initState() {
+    // widget.model.getDoctor().then((_) {
+    //   setState(() {
+    //     _doctor = widget.model.getDoctor();
+    //   });
+    // });
+    getDoctor().then((_) {
+      setState(() {
+        _doctor = getDoctor();
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: mainColor
-      ),
-      child:
-    Scaffold(
-        backgroundColor: Color(0xFF0000),
-        appBar: AppBar(
-          backgroundColor: Color(0xFF0000),
-          elevation: 0,
-        ),
-        body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          child: ListView(
-            children: <Widget>[
-              Stack(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                textDirection: TextDirection.rtl,
-                children: <Widget>[
-                  Align(
-                      child: CircleAvatar(
-                    radius: 100,
-                    backgroundColor: Colors.white,
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: 195.0,
-                        height: 195.0,
-                        child:
-                            Image.asset('assets/Doctor.png', fit: BoxFit.fill),
-                        // child: (_image!=null)?Image.file(
-                        //   _image,
-                        //   fit: BoxFit.fill,
-                        // ):Image.network(
-                        //   "https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-                        //   fit: BoxFit.fill,
-                      ),
-                    ),
-                  )),
-                  Positioned(
-                      right: 190,
-                      top: 170,
-                      width: 100,
-                      height: 26,
-                      child: RaisedButton(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          color: Colors.grey.withOpacity(0.05),
-                          //  padding: EdgeInsets.only(top: 150.0, right: 130),
-                          child: editButton(),
-                          onPressed: () {})),
-                  isOnline
-                      ? Center(
-                          child: Container(
-                          alignment: Alignment.bottomRight,
-                          margin: EdgeInsets.only(right: 105, top: 170),
-                          child: Container(
-                            height: 25,
-                            width: 25,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 1,
-                              ),
-                              shape: BoxShape.circle,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ))
-                      : Container(),
-                ],
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  textDirection: TextDirection.rtl,
-                  children: <Widget>[
-                    Text(
-                      'د.  '
-                      "احمد علي",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                        'طبيب متخصص'
-                        " - "
-                        "طبيب جراحة",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ))
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                margin: EdgeInsets.only(right: 25),
-                child: Text(
-                  'الاسم الأول',
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-              firstName(),
-              SizedBox(height: 15),
-              Container(
-                margin: EdgeInsets.only(right: 25),
-                child: Text(
-                  'اسم العائلة',
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-              lastName(),
-              SizedBox(height: 15),
-              Container(
-                margin: EdgeInsets.only(right: 25),
-                child: Text(
-                  'كلمة المرور',
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-              password(),
-              SizedBox(height: 20.0),
-              Container(
-                  margin: EdgeInsets.only(right: 25),
-                  child: Text(
-                    'البريد الالكتروني',
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  )),
-              SizedBox(height: 5.0),
-              Container(
-                padding: EdgeInsets.only(top:10,right:5,left:5),
-                margin: EdgeInsets.symmetric(horizontal: 20),
-               // height: 100,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        alignment: Alignment.bottomCenter,
-                        child: addDeleteButtons())
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                  margin: EdgeInsets.only(right: 25),
-                  child: Text(
-                    'أرقام الهواتف',
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  )),
-              SizedBox(height: 5.0),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-               padding: EdgeInsets.only(top:10,right:5,left:5),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white),
-                child: Column(
-                  textDirection: TextDirection.rtl,
-                  children: <Widget>[
-                CheckboxListTile(
-                  title: Text(inputData,textDirection: TextDirection.rtl,),
-                  value: boolValue,
-                   onChanged: (bool value){
-                     setState(() {
-                       boolValue = true;
-                     });
-                   }),
-                    Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        alignment: Alignment.bottomCenter,
-                        child: addDeleteButtons())
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                  margin: EdgeInsets.only(right: 25),
-                  child: Text(
-                    'تاريخ الميلاد',
-                    textDirection: TextDirection.rtl,
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  )),
-              SizedBox(height: 10.0),
-              Container(
-                  margin: EdgeInsets.only(right: 25, left: 25),
-                  child: DatePickerWidget(
+    // return  ScopedModelDescendant<MainModel>(
+    //     builder: (BuildContext context, Widget child, MainModel model) {
 
-                      //onConfirm: (){},
-                      initialDateTime: DateTime(1980),
-                      minDateTime: DateTime(1980),
-                      maxDateTime: DateTime(2020),
-                      locale: DateTimePickerLocale.ar,
-                      pickerTheme: DateTimePickerTheme(
-                          showTitle: false,
-                          pickerHeight: 60.0,
-                          itemTextStyle:
-                              TextStyle(color: Colors.black, fontSize: 18)))),
-              SizedBox(height: 15.0),
-              SizedBox(height: 20),
-              Container(
-                margin: EdgeInsets.only(right: 25),
-                child: Text(
-                  'محل الإقامة',
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                height: 80,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.white),
-                child: Text("")
-                //TextField(textDirection: TextDirection.rtl)
-              ),
-              SizedBox(height: 30),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(textDirection: TextDirection.rtl, children: [
-                    IconButton(
-                        icon: Icon(
-                          Icons.place,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {}),
-                    Text(
-                      'أماكن العمل',
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    )
-                  ])),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  padding: EdgeInsets.only(top:10,right:5,left:5),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.white),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          alignment: Alignment.bottomCenter,
-                          child: addDeleteButtons())
-                    ],
-                  )),
-              SizedBox(height: 30),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(textDirection: TextDirection.rtl, children: [
-                    IconButton(
-                        icon: Icon(
-                          Icons.slideshow,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {}),
-                    Text(
-                      'السيرة الذاتية',
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    )
-                  ])),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                height: 150,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.white),
-                child: Text(''),
-              ),
-              SizedBox(height: 20),
-              saveButton(() {})
-            ],
-          ),
-         )     ));
+    //   model.getDoctor().then((_){
+    //   setState(() {
+    //     _doctor =model.getDoctor();
+    //   });
+    // });
+    return Container(
+        decoration: BoxDecoration(gradient: mainColor),
+        child: Scaffold(
+            backgroundColor: Color(0xFF0000),
+            appBar: AppBar(
+              backgroundColor: Color(0xFF0000),
+              elevation: 0,
+            ),
+            body: FutureBuilder(
+                future: _doctor,
+                builder: (context, snapShot) {
+                  if (snapShot.hasData) {
+                    String _birthdate = snapShot.data.birthdate;
+                    return Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: Form(
+                          key: _formKey,
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: <Widget>[
+                              Center(
+                                  child: Container(
+                                      height: 250,
+                                      child: Stack(children: [
+                                        Container(
+                                            child: CircleAvatar(
+                                                radius: 100,
+                                                backgroundColor: Colors.white,
+                                                child: ClipOval(
+                                                    child: SizedBox(
+                                                        width: 195.0,
+                                                        height: 195.0,
+                                                        child: Image.asset(
+                                                            'assets/Doctor.png',
+                                                            fit: BoxFit
+                                                                .fill))))),
+                                        SizedBox(height: 1),
+                                        Positioned(
+                                            right: 50,
+                                            top: 200,
+                                            width: 100,
+                                            height: 26,
+                                            //  Container(
+                                            //     margin: EdgeInsets.only(right:80,left:120,bottom: 100),
+                                            //     padding: EdgeInsets.only(right:18,left:20,bottom: 10),
+                                            child: RaisedButton(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12.0),
+                                                shape: RoundedRectangleBorder(
+                                                  side: BorderSide(
+                                                    style: BorderStyle.none,
+                                                  ),
+                                                ),
+                                                color: Colors.grey
+                                                    .withOpacity(0.05),
+                                                //  padding: EdgeInsets.only(top: 150.0, right: 130),
+                                                child: editButton(),
+                                                onPressed: () {})),
+                                      ]))),
+                              SizedBox(height: 5),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  textDirection: TextDirection.rtl,
+                                  children: <Widget>[
+                                    Text(
+                                      'د.  ' + snapShot.data.firstName + "  "+snapShot.data.lastName
+                                     ,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                       snapShot.data.major,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ))
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Container(
+                                margin: EdgeInsets.only(right: 25),
+                                child: Text(
+                                  'الاسم الأول',
+                                  textDirection: TextDirection.rtl,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                              firstName(snapShot.data),
+                              SizedBox(height: 15),
+                              Container(
+                                margin: EdgeInsets.only(right: 25),
+                                child: Text(
+                                  'اسم العائلة',
+                                  textDirection: TextDirection.rtl,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                              lastName(snapShot.data),
+                              SizedBox(height: 15),
+                              Container(
+                                margin: EdgeInsets.only(right: 25),
+                                child: Text(
+                                  'كلمة المرور',
+                                  textDirection: TextDirection.rtl,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                              password(snapShot.data),
+                              SizedBox(height: 20.0),
+                              Container(
+                                  margin: EdgeInsets.only(right: 25),
+                                  child: Text(
+                                    'البريد الالكتروني',
+                                    textDirection: TextDirection.rtl,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20.0),
+                                  )),
+                              SizedBox(height: 5.0),
+                              Container(
+                                padding:
+                                    EdgeInsets.only(top: 10, right: 5, left: 5,bottom: 5),
+                                margin: EdgeInsets.symmetric(horizontal: 20,),
+                                
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    color: Colors.white),
+                                child: Column(
+                                  textDirection: TextDirection.rtl,
+                                  children: <Widget>[
+                                    // ListTile(
+                                    //   title:emailAdress(snapShot.data),
+                                    // ),
+                                  emailAdress(snapShot.data),
+                                      
+                                    Container(
+                                        margin:
+                                            EdgeInsets.symmetric(horizontal: 5),
+                                        alignment: Alignment.bottomCenter,
+                                        child: addDeleteButtons())
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Container(
+                                  margin: EdgeInsets.only(right: 25),
+                                  child: Text(
+                                    'أرقام الهواتف',
+                                    textDirection: TextDirection.rtl,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20.0),
+                                  )),
+                              SizedBox(height: 5.0),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                padding:
+                                    EdgeInsets.only(top: 10, right: 5, left: 5),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.white),
+                                child: Column(
+                                  textDirection: TextDirection.rtl,
+                                  children: <Widget>[
+                                    CheckboxListTile(
+                                        title: Text(
+                                          inputData,
+                                          textDirection: TextDirection.rtl,
+                                        ),
+                                        value: boolValue,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            boolValue = true;
+                                          });
+                                        }),
+                                    Container(
+                                        margin:
+                                            EdgeInsets.symmetric(horizontal: 5),
+                                        alignment: Alignment.bottomCenter,
+                                        child: addDeleteButtons())
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Container(
+                                  margin: EdgeInsets.only(right: 25),
+                                  child: Text(
+                                    'تاريخ الميلاد',
+                                    textDirection: TextDirection.rtl,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20.0),
+                                  )),
+                              SizedBox(height: 10.0),
+                              Container(
+                                  margin: EdgeInsets.only(right: 25, left: 25),
+                                  child: DatePickerWidget(
+
+                                     onChange:
+                                          (DateTime value, selectedIndex) {
+                                        setState(() {
+                                      _birthdate =
+                                              value.toUtc().toIso8601String();
+                                          _formData["birthdate"] =
+                                              value.toUtc().toIso8601String();
+                                        });
+                                      },
+                                      initialDateTime:  DateTime.parse(
+                                          snapShot.data.birthdate),
+                                      minDateTime: DateTime(1980),
+                                      maxDateTime: DateTime(2020),
+                                      locale: DateTimePickerLocale.ar,
+                                      pickerTheme: DateTimePickerTheme(
+                                          showTitle: false,
+                                          pickerHeight: 60.0,
+                                          itemTextStyle: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 18)))),
+                              SizedBox(height: 15.0),
+                              SizedBox(height: 20),
+                              Container(
+                                margin: EdgeInsets.only(right: 25),
+                                child: Text(
+                                  'محل الإقامة',
+                                  textDirection: TextDirection.rtl,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ),
+                              Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.white),
+                                  child: Text("")
+                                  //TextField(textDirection: TextDirection.rtl)
+                                  ),
+                              SizedBox(height: 30),
+                              Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 8),
+                                  child: Row(
+                                      textDirection: TextDirection.rtl,
+                                      children: [
+                                        IconButton(
+                                            icon: Icon(
+                                              Icons.place,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {}),
+                                        Text(
+                                          'أماكن العمل',
+                                          textDirection: TextDirection.rtl,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                          ),
+                                        )
+                                      ])),
+                              Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                                  padding: EdgeInsets.only(
+                                      top: 10, right: 5, left: 5),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.white),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          alignment: Alignment.bottomCenter,
+                                          child: addDeleteButtons())
+                                    ],
+                                  )),
+                              SizedBox(height: 30),
+                              Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 8),
+                                  child: Row(
+                                      textDirection: TextDirection.rtl,
+                                      children: [
+                                        IconButton(
+                                            icon: Icon(
+                                              Icons.slideshow,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {}),
+                                        Text(
+                                          'السيرة الذاتية',
+                                          textDirection: TextDirection.rtl,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                          ),
+                                        )
+                                      ])),
+                              bio(snapShot.data),
+                              SizedBox(height: 20),
+                              saveButton(() async {
+                                await widget.model
+                                    .updateDoctorData(
+                                        firstName: _firstNameController.text,
+                                        lastName: _lastNameController.text,
+                                        bio: _bioController.text,
+                                      //  email: _emailController.text,
+                                        birthdate: _birthdate)
+                                    .then((_) {
+                                  doneWidget(context);
+                                  Future.delayed(Duration(seconds: 1))
+                                      .then((_) {
+                                    Navigator.pushNamed(
+                                        context, "/HomeScreenDr");
+                                  });
+                                });
+                              })
+                            ],
+                          ),
+                          // ))
+                        ));
+                  } else {
+                    return Center(
+                        child: SpinKitFadingCircle(
+                      color: Color(0xFF87C9BF),
+                      size: 30,
+                    ));
+                  }
+                })));
+    //   });
   }
 
   Widget editButton() {
@@ -342,11 +460,22 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
         ]);
   }
 
-  Widget firstName() {
+  Widget firstName(dynamic snapShot) {
+    if (_doctor == null && _firstNameController.text.trim() == '') {
+      _firstNameController.text = '';
+    } else if (_doctor != null && _firstNameController.text.trim() == '') {
+      _firstNameController.text = snapShot.firstName;
+    } else if (_doctor != null && _firstNameController.text.trim() != '') {
+      _firstNameController.text = _firstNameController.text;
+    } else if (_doctor == null && _firstNameController.text.trim() != '') {
+      _firstNameController.text = _firstNameController.text;
+    } else {
+      _firstNameController.text = '';
+    }
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 25.0),
         child: TextFormField(
-          // initialValue: '',
+          controller: _firstNameController,
           textDirection: TextDirection.rtl,
           decoration: InputDecoration(
               filled: true,
@@ -357,11 +486,22 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
         ));
   }
 
-  Widget lastName() {
+  Widget lastName(dynamic snapShot) {
+    if (_doctor == null && _lastNameController.text.trim() == '') {
+      _lastNameController.text = '';
+    } else if (_doctor != null && _lastNameController.text.trim() == '') {
+      _lastNameController.text = snapShot.lastName;
+    } else if (_doctor != null && _lastNameController.text.trim() != '') {
+      _lastNameController.text = _lastNameController.text;
+    } else if (_doctor == null && _lastNameController.text.trim() != '') {
+      _lastNameController.text = _lastNameController.text;
+    } else {
+      _lastNameController.text = '';
+    }
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 25.0),
         child: TextFormField(
-          //initialValue: '',
+          controller: _lastNameController,
           textDirection: TextDirection.rtl,
           decoration: InputDecoration(
               filled: true,
@@ -372,10 +512,22 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
         ));
   }
 
-  Widget emailAdress() {
+  Widget emailAdress(dynamic snapShot) {
+    if (_doctor == null && _emailController.text.trim() == '') {
+      _emailController.text = '';
+    } else if (_doctor != null && _emailController.text.trim() == '') {
+      _emailController.text = snapShot.email;
+    } else if (_doctor != null && _emailController.text.trim() != '') {
+      _emailController.text = _emailController.text;
+    } else if (_doctor == null && _emailController.text.trim() != '') {
+      _emailController.text = _emailController.text;
+    } else {
+      _emailController.text = '';
+    }
     return Container(
-        margin: EdgeInsets.symmetric(horizontal: 25.0),
+      //  margin: EdgeInsets.symmetric(horizontal: 25.0),
         child: TextFormField(
+          controller: _emailController,
           decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
@@ -385,10 +537,22 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
         ));
   }
 
-  Widget password() {
+  Widget password(dynamic snapShot) {
+    if (_doctor == null && _passwordController.text.trim() == '') {
+      _passwordController.text = '';
+    } else if (_doctor != null && _passwordController.text.trim() == '') {
+      _passwordController.text = snapShot.email;
+    } else if (_doctor != null && _passwordController.text.trim() != '') {
+      _passwordController.text = _passwordController.text;
+    } else if (_doctor == null && _passwordController.text.trim() != '') {
+      _passwordController.text = _passwordController.text;
+    } else {
+      _passwordController.text = '';
+    }
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 25.0),
         child: TextFormField(
+          controller: _passwordController,
           textDirection: TextDirection.rtl,
           decoration: InputDecoration(
               filled: true,
@@ -399,6 +563,33 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
         ));
   }
 
+
+Widget bio(dynamic snapShot){
+     if (_doctor == null && _bioController.text.trim() == '') {
+      _bioController.text = '';
+    } else if (_doctor != null && _bioController.text.trim() == '') {
+      _bioController.text = snapShot.bio;
+    } else if (_doctor != null && _bioController.text.trim() != '') {
+      _bioController.text = _bioController.text;
+    } else if (_doctor == null && _bioController.text.trim() != '') {
+      _bioController.text = _bioController.text;
+    } else {
+      _bioController.text = '';
+    }
+  return Container(
+        margin: EdgeInsets.symmetric(horizontal: 25.0),
+        child: TextFormField(
+          controller: _bioController,
+          textDirection: TextDirection.rtl,
+          maxLines:10,
+          decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey, width: 2.0))),
+          onChanged: (String valure) {},
+        ));
+}
   Widget changeButton() {
     return RawMaterialButton(
         onPressed: () {},
@@ -435,15 +626,15 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
                   context: context,
                   builder: (context) {
                     return Center(
-                        child: Column( 
-                          mainAxisAlignment: MainAxisAlignment.center,         
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         AlertDialog(
                           content: TextFormField(
                             controller: myController,
                             textDirection: TextDirection.rtl,
-                            onSaved: (String value){
-                              saveData(value);
+                            onSaved: (String value) {
+                             
                             },
                           ),
                         ),
@@ -456,7 +647,7 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
                             child: RawMaterialButton(
                               onPressed: () {
                                 setState(() {
-                               
+                                  inputData = myController.text;
                                 });
                                 Navigator.pop(context);
                               },
@@ -493,9 +684,5 @@ class _DrPersonalInfoState extends State<DrPersonalInfo> {
     ));
   }
 
-  void saveData(String value){
-    setState(() {
-      inputData=value;
-    });
-  }
+  
 }

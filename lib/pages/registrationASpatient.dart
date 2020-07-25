@@ -1,6 +1,5 @@
 import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
 import 'package:allo_doctor/pages/ui_widgets/registrationRow.dart';
-import 'package:allo_doctor/pages/ui_widgets/regostrtionDone.dart';
 import 'package:allo_doctor/pages/ui_widgets/wrongWidget.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
@@ -61,11 +60,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
   //   msgStatus = 'Check email or password';
   // }else{
   //  Navigator.pushReplacementNamed(context, '/dashboard');
-  // }
-  //  });
-  // }
-  //   });
-  // }
+  // }//  });// }//   })// }
 
   _onPressed() async {
     await widget.model.registrationPatient(
@@ -73,21 +68,23 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
       lastName: _lastNameController.text,
       email: _emailController.text,
       birthdate: _birthdata.toUtc().toIso8601String(),
-      gender: "male",
-      avatar: "null"
+      gender: "MALE",
+      avatar: ""
     );
 
-    if (widget.model.statusCode == 200) {
+    if (widget.model.statusCodes == 200) {
       Navigator.pushNamed(context, "/homeScreenPatient");
+
+      
       // registrationDone(context);
       // Future.delayed(Duration(seconds: 1)).then((_) {
       //   Navigator.pop(context);
       // });
 
-    } else if (widget.model.statusCode != 200) {
+    } else if (widget.model.statusCodes != 200) {
       wrongWidget(context);
       Future.delayed(Duration(seconds: 1)).then((_) {
-       // Navigator.pop(context);
+       Navigator.pop(context);
       });
     }
   }
@@ -161,7 +158,6 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
                               color: Colors.black,
                               fontSize: 20,
                               fontFamily: 'Tajawal-Medium'),
-                          //hint: Text('الجنس'),
                           value: _selectedText,
 
                           items: <String>['الجنس', 'ذكر', 'أنثى']
@@ -185,22 +181,17 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
                     passwordField(),
                     SizedBox(height: 20.0),
                     registrationButton(() async {
-                      _onPressed();
-
+                    // await  _onPressed().then((_){
+                    //       widget.model.login("1b407356-9df5-4079-b978-6a12e216e6e6","usernameaa", "1233@@44password123456",);
+                    // });
+                   // widget.model.login("ajduemeedcmv", "123456.dASSDpassword", "04d7ec5b-e46c-4651-8b8c-0f26b27faf78");
+                     _onPressed();
                       if (widget.model.isLoading == true) {
                         onLoading(context);
-                        // await Future.delayed(_onPressed().then((_) {
-                        //   Navigator.pushNamed(context, "/homeScreenPatient");
-                        // }));                     
-                      }
-
-                      // widget.model.isLoading
-                      //     ? onLoading(context)
-                      //     : Navigator.pop(context);
-                      //  if (widget.model.isLoading == false &&
-                      //       widget.model.registrationPatient() == true) {
-                      //   } else if (widget.model.isLoading == false &&
-                      //       widget.model.registrationPatient() == false) {
+                        await Future.delayed(_onPressed().then((_) {
+                          Navigator.pushNamed(context, "/homeScreenPatient");
+                        }));                     
+                     }
                     }),
                     SizedBox(height: 10.0),
                     registrationRow(() {
@@ -215,7 +206,9 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: _firstNameController,
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
+          
             counterStyle: TextStyle(color: Colors.white),
             enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white, width: 2.0)),
@@ -233,6 +226,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: _lastNameController,
+            style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
               labelText: 'اسم العائلة',
               labelStyle: TextStyle(color: Colors.white, fontSize: 18),
@@ -249,6 +243,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: _emailController,
+            style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: 'البريد الالكتروني',
             labelStyle: TextStyle(color: Colors.white, fontSize: 18),
@@ -266,6 +261,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: _userNameController,
+            style: TextStyle(color: Colors.white),
           textDirection: TextDirection.rtl,
           decoration: InputDecoration(
             labelText: 'اسم المستخدم',
@@ -288,6 +284,7 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: _passwordController,
+           
           decoration: InputDecoration(
               labelText: 'كلمة المرور',
               labelStyle: TextStyle(color: Colors.white, fontSize: 18),

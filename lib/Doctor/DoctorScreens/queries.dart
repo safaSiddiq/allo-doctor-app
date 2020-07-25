@@ -1,13 +1,23 @@
 import 'package:allo_doctor/Doctor/ui_widgets/queryCard.dart';
+import 'package:allo_doctor/models/doctor.dart';
+import 'package:allo_doctor/models/query.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 //import 'package:allo_doctor/models/query.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Queries extends StatefulWidget {
+  final MainModel model;
+  Queries(this.model);
   @override
   _QueriesState createState() => _QueriesState();
 }
 
+
 class _QueriesState extends State<Queries> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+     GlobalKey<RefreshIndicatorState>();
+   MainModel _model;
   String _selectedText =  'اختر نوع الاستعلام';
  // List<Query> _queries =[];
   final mainColor = LinearGradient(
@@ -18,18 +28,34 @@ class _QueriesState extends State<Queries> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+List<Query>_queries;
+
+   Future<Doctor> _doctor;
+  @override
+  void initState() {
+    widget.model.getDoctor().then((_) {
+      setState(() {
+        _doctor = widget.model.getDoctor();
+      });
+    });
+    widget.model.getQueries().then((_){
+      setState(() {
+        _queries = widget.model.queries;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: mainColor
       ),
-    child:
-    
-    Scaffold(
+    child:Scaffold(
       backgroundColor: Color(0xFF00000),
        appBar: PreferredSize(
-            preferredSize: Size(double.infinity, 100), // 44 is the height
+            preferredSize: Size(double.infinity, 100),
             child: AppBar(
               elevation: 0,
               // shape: UnderlineInputBorder(
@@ -45,7 +71,9 @@ class _QueriesState extends State<Queries> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.0)),
-                    child: DropdownButton<String>(
+                    child: DropdownButtonHideUnderline(
+                            child: 
+                     DropdownButton<String>(
                       iconDisabledColor: Colors.teal,
                       style: TextStyle(
                         color: Colors.black,
@@ -54,15 +82,12 @@ class _QueriesState extends State<Queries> {
                       ),
                       value: _selectedText,
                       items: <String>[
-                        'اختر نوع الاستعلام',
-                        "طبيب باطينية",
-                        "طبيب نساء",
-                        "طبيب أذن و حنجرة",
-                        "طبيب قلب",
+                        'اختر نوع الاستعلام',     
                         "طبيب أسنان",
                         'طبيب عيون'
                       ].map((String value) {
-                        return DropdownMenuItem<String>(
+                        return 
+                        DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
                         );
@@ -73,28 +98,53 @@ class _QueriesState extends State<Queries> {
                           _selectedText = val;
                         });
                       },
-                    )),       
+                    ))),       
              
               ],
               bottom:PreferredSize(
+
                 child:bottonsRow() ,
                preferredSize: Size(double.infinity, 90)),
             ),
             ),
-            body:
-            Container(
-              margin: EdgeInsets.only(top:10),
-              decoration: BoxDecoration(
-               borderRadius: BorderRadius.only(topLeft: Radius.circular(25),topRight: Radius.circular(25)),
-                color: Colors.white
-              ),
-              child: ListView(
-                children: <Widget>[
-                 QueryCard()
-                ],
-              ),
-            ),
-    ));
+            body: RefreshIndicator(
+    key: _refreshIndicatorKey,
+    onRefresh: _refresh,
+    child:
+            FutureBuilder(
+              future: _doctor,
+              builder: (context,snapShot){
+                if (snapShot.hasData){
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _queries.length,
+                    itemBuilder: (context,index)=>QueryCard(_model,
+                      _queries[index],snapShot.data,_queries[index].patientId,_queries[index].queryId
+                    ));
+                }else{
+                  return Center(
+                        child: SpinKitFadingCircle(
+                      color: Color(0xFF87C9BF),           
+                      size: 35,
+                    ));
+                }}
+            )
+    )));
+  }
+  Future _refresh(){
+   widget.model.getDoctor().then((_) {
+      setState(() {
+        _doctor = widget.model.getDoctor();
+      });
+    });
+    widget.model.getQueries().then((_){
+      setState(() {
+        _queries = widget.model.queries;
+      });
+    });
+
+    return _doctor;
+ 
   }
   
 }

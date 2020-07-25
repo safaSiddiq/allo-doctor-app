@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget raysContainer(){
   return Container(
-     margin: EdgeInsets.symmetric(horizontal:10,vertical:10),
+     margin: EdgeInsets.symmetric(vertical:10),
      
             decoration:BoxDecoration(
               //borderRadius: BorderRadius.circular(20),

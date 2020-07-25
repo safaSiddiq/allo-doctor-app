@@ -6,7 +6,7 @@ Widget medicineContainer(){
           //height: 150,
             padding: EdgeInsets.symmetric(horizontal:15,vertical:10),
             decoration:BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(5),
               color: Colors.white
             ),
             child:Column(

@@ -1,31 +1,103 @@
-import 'package:allo_doctor/models/doctor.dart';
-import 'package:allo_doctor/models/patient.dart';
+
+
 import 'package:allo_doctor/models/query.dart';
-//import 'package:allo_doctor/patient/patientScreens/fillQuery.dart';
+import 'package:allo_doctor/pages/ui_widgets/doneWidget.dart';
+import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
+import 'package:allo_doctor/pages/ui_widgets/wrongWidget.dart';
+
 import 'package:allo_doctor/patient/patientScreens/medicalFile.dart';
+import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart'as http;
+import 'dart:convert';
 
 class WriteQuery extends StatefulWidget {
+  final MainModel model;
+  final Query query ;
+  WriteQuery(this.model,this.query);
   @override
   _WriteQueryState createState() => _WriteQueryState();
 }
 
  
 class _WriteQueryState extends State<WriteQuery> {
- Doctor _doctor=Doctor(firstName: "",lastName: "",avatar: "assets/Doctor.png");
- Patient _patient = Patient(firstName: "",lastName: "",avatar: "assets/Patient.png");
- Query _query = Query(queryData: "",queryDate: "",queryResult: "",queryRequestDate: "");
+ TextEditingController _queryResultController = TextEditingController();
+ 
 
   String medicine = '';
   String note = '';
   bool boolValue = false;
+final mainColor = LinearGradient(
+    begin: FractionalOffset.bottomCenter,
+    stops: [
+      0.0,
+      1.0,
+    ],
+    colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
+  );
+
+bool _isLoading ;
+int statusCode;
+
+
+Future writeQueryResult({
+    
+    String queryId,
+    int queryType,
+    String queryResult,
+    String queryResultDate,
+    String patientId,
+    bool approved,
+    bool emergency}
+
+  )async{
+
+ setState(() {
+   _isLoading = true;
+ });
+     final Map<String, dynamic> queryResultData = {
+      "queryId": queryId,
+      "queryType": queryType,
+      "queryResultDate":queryResultDate,
+      "queryResult":queryResult,
+      "patientId":patientId,
+      "approved":approved,
+      "emergency":emergency
+    };
+    final http.Response response = await http.patch("http://34.71.92.1:3000/doctors/1fef50ee-7c82-4a6e-9de5-db5a1ed0ec07/queries",
+     headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },body: json.encode(queryResultData)
+    ); 
+    print("query edit${response.statusCode}");
+    print(response.body);
+    setState(() {
+      statusCode = response.statusCode;
+      _isLoading = false;
+    });
+  }
+
+@override
+  void initState() {
+ 
+     // widget.model.writeQueryResult(queryId:widget.query.queryId,queryResult: "hello",patientId: widget.query.patientId,queryType: 1);
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.teal,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: mainColor
+      ),
+    child:
+    Scaffold(
+      backgroundColor: Color(0xff00000),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xff0000),
         actions: <Widget>[
           CircleAvatar(
               radius: 21,
@@ -34,9 +106,10 @@ class _WriteQueryState extends State<WriteQuery> {
                   child: SizedBox(
                       width: 40.0,
                       height: 40.0,
-                      child:_doctor.avatar==null?
-                          Image.asset('assets/Doctor.png', fit: BoxFit.fill):
-                          NetworkImage(_doctor.avatar))))
+                      child:
+                          Image.asset('assets/Doctor.png', fit: BoxFit.fill)//:
+                          //NetworkImage(_doctor.avatar)
+                          )))
         ],
       ),
       body: Container(
@@ -49,7 +122,7 @@ class _WriteQueryState extends State<WriteQuery> {
               children: <Widget>[
                 Text(": " "تشخيص المريض  ",
                     style: TextStyle(color: Colors.white, fontSize: 14)),
-                Text(_patient.firstName + _patient.lastName)
+              //  Text(_patient.firstName + _patient.lastName)
               ],
             ),
             SizedBox(height: 10),
@@ -60,7 +133,7 @@ class _WriteQueryState extends State<WriteQuery> {
                   children: <Widget>[
                     Text(": " "تاريخ التشخيص ",
                         style: TextStyle(color: Colors.white, fontSize: 14)),
-                    Text(_query.queryDate)
+                   // Text(_query.queryDate)
                   ],
                 )),
             SizedBox(height: 10),
@@ -71,8 +144,19 @@ class _WriteQueryState extends State<WriteQuery> {
               child: Row(
                 textDirection: TextDirection.rtl,
                 children: <Widget>[
-                Text("استعلام من نوع "), 
-                Text("")],
+                Text(" : استعلام من نوع "), 
+                 Container(
+                      padding: EdgeInsets.symmetric(horizontal:10,vertical:6),
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        borderRadius: BorderRadius.circular(4)
+                      ),
+                      child: widget.query.queryType==null?
+                      Text("زيارة طبية",style: TextStyle(color:Colors.white,fontSize:14),):
+                      Text("",style: TextStyle(color:Colors.white,fontSize:14),)
+                    )
+                
+                ],
               ),
             ),
             SizedBox(height: 10),
@@ -83,13 +167,14 @@ class _WriteQueryState extends State<WriteQuery> {
             ),
             SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 15),
+              
+              padding: EdgeInsets.symmetric(vertical: 15,horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
               ),
-              child: Text(_query.queryData,
-              style: TextStyle(color:Colors.black,fontSize: 14,),),
+              child: Text(widget.query.queryData,
+              style: TextStyle(color:Colors.black,fontSize: 14,),textDirection: TextDirection.rtl,),
             ),
             SizedBox(height: 10),
             Text(
@@ -99,19 +184,21 @@ class _WriteQueryState extends State<WriteQuery> {
             ),
             SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
               ),
               child: Directionality(textDirection: TextDirection.rtl, child: 
               TextFormField(
+                controller: _queryResultController,
                 decoration: InputDecoration(contentPadding:EdgeInsets.symmetric(horizontal:10),
                 filled: true,
                 fillColor: Colors.white,
                 ),
+                maxLines: 10,
                 onSaved: (String value){
-                  _query.queryResult=value;
+                //  _query.queryResult=value;
                 },
               )),
             ),
@@ -220,6 +307,7 @@ class _WriteQueryState extends State<WriteQuery> {
               textDirection: TextDirection.rtl,
             ),
             SizedBox(height: 10),
+            
             Container(
               height: 140,
               decoration: BoxDecoration(
@@ -227,11 +315,28 @@ class _WriteQueryState extends State<WriteQuery> {
               child: Text(''),
             ),
             SizedBox(height: 15),
-            saveButton(() {})
+            saveButton(() async{
+             await writeQueryResult(queryResult: _queryResultController.text,queryId: widget.query.queryId,queryType: 1,patientId: widget.query.patientId,queryResultDate:"2020-07-18T21:30:56.000Z" ,approved: true,emergency: false);
+            print(_isLoading);
+             _isLoading==true?onLoading(context):null;
+
+               if (statusCode == 200) {
+                        doneWidget(context);
+                        await Future.delayed(Duration(seconds: 1)).then((_) {
+                          Navigator.pushNamed(context, "/HomeScreenDr");
+                        });
+                      } else if (statusCode != 200) {
+                        wrongWidget(context);
+                        await Future.delayed(Duration(seconds: 2)).then((_) {
+                          Navigator.pop(context);
+                        });
+                      }
+                
+            })
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget addDeleteButtons() {
