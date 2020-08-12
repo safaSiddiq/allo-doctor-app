@@ -115,13 +115,13 @@ class _DiagnosisState extends State<Diagnosis> {
          infoContainer(),
           SizedBox(height:15),
          tilteWidget("الأدوية المطلوبة"),
-        medicineContainer(),
+        medicinesContainer(),
          SizedBox(height:15),
          tilteWidget("التحاليل المطلوبة"),
-         testContainer(),
+         testsContainer(),
           SizedBox(height:15),
          tilteWidget("صور الأشعة"),
-         raysContainer(),
+         raysContainers(),
         SizedBox(height:15),
          tilteWidget("العمليات "),
          infoContainer(),
@@ -156,7 +156,7 @@ Widget infoContainer(){
 
 
 
-Widget medicineContainer(){
+Widget medicinesContainer(){
   return  Container(
           
           //height: 150,
@@ -176,26 +176,26 @@ Widget medicineContainer(){
              Row(
                textDirection: TextDirection.rtl,
               children: <Widget>[
-                Text('الجرعة' " :",textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
+                Text('  xsss الجرعة' " :",textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
               ],
             ),
-             Row(
-               textDirection: TextDirection.rtl,
-              children: <Widget>[
-                Text('مدة الإستخدام'' :',textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
-              ],
-            ),
-             Row(
-               textDirection: TextDirection.rtl,
-              children: <Widget>[
-                Text('ملاحظات'' :',textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
-              ],
-            ),
+            //  Row(
+            //    textDirection: TextDirection.rtl,
+            //   children: <Widget>[
+            //     Text('مدة الإستخدام'' :',textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
+            //   ],
+            // ),
+            //  Row(
+            //    textDirection: TextDirection.rtl,
+            //   children: <Widget>[
+            //     Text('ملاحظات'' :',textDirection:TextDirection.rtl,style: TextStyle(color:Colors.grey[700],fontSize:13),)
+            //   ],
+            // ),
              ],
             )
             );
 }
-Widget testContainer(){
+Widget testsContainer(){
   return Container(
      margin: EdgeInsets.symmetric(horizontal:10,vertical:10),
      
@@ -255,7 +255,7 @@ Widget testContainer(){
   );
 }
 
-Widget raysContainer(){
+Widget raysContainers(){
   return Container(
      margin: EdgeInsets.symmetric(horizontal:10,vertical:10),
      

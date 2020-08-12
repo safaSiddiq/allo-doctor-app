@@ -13,6 +13,13 @@ class QueriesReplaies extends StatefulWidget {
 class _QueriesReplaiesState extends State<QueriesReplaies> {
   String _selectedText = 'اختر نوع الاستعلام';
 List<Query> _queriesResults = [];
+List<Query> _filteredQuery = [];
+int _type = null;
+int _pressed =0;
+ List<Query> _approved = [];
+  List<Query> _unapproved = [];
+   List<Query> _waiting = [];
+
   final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
     stops: [
@@ -27,12 +34,60 @@ List<Query> _queriesResults = [];
    widget.model.getQueryResultData().then((_){
      setState(() {
        _queriesResults = widget.model.queriesResults;
+        _filterQuery();
+        _approv();
+        _unapprov();
+        _wait();
      });
    });
+   
+   
+  
     super.initState();
   }
 
+  void _approv(){
+     for(int i =0 ;i<_filteredQuery.length;i++){
+           if(_filteredQuery[i].approved == true){
+             _approved.add(_filteredQuery[i]);
+           }}
+  }
 
+  void _unapprov(){
+          
+         for(int i =0 ;i<_filteredQuery.length;i++){
+           if(_filteredQuery[i].approved == false){
+             _unapproved.add(_filteredQuery[i]);
+           }}
+  }
+  void _wait(){
+    for(int i =0 ;i<_filteredQuery.length;i++){
+           if(_filteredQuery[i].approved == null){
+             _waiting.add(_filteredQuery[i]);
+           }}
+  }
+
+
+
+void _filterQuery(){
+   // if (_selectedText != "اختر نوع الاستعلام") {
+        if ( _type != null  ) {
+      List<Query> tmpList = [];
+      for (int i = 0; i < _queriesResults.length; i++) {
+        if ( 0 ==_queriesResults[i].queryType) {
+         
+          tmpList.add(_queriesResults[i]);
+        }
+      }
+      setState(() {
+         _filteredQuery = tmpList;
+      });
+     
+    // } else if (_selectedText == "اختر نوع الاستعلام") {
+      } else if (_type == null) {
+      _filteredQuery = _queriesResults;
+    }
+}
 
 
   @override
@@ -71,7 +126,7 @@ List<Query> _queriesResults = [];
                       value: _selectedText,
                       items: <String>[
                         'اختر نوع الاستعلام',
-                        "طبيب باطينية",
+                        "استعلام عام",
                     
                       ].map((String value) {
                         return DropdownMenuItem<String>(
@@ -83,18 +138,54 @@ List<Query> _queriesResults = [];
                         _selectedText = val;
                         setState(() {
                           _selectedText = val;
+                          _pressed =0;
+                          // if(_selectedText == "'اختر نوع الاستعلام"){
+                          //   _type = null;
+                          // }
+                         if (_selectedText == "استعلام عام") {
+                            _type = 0;
+                          }
+                          // else{
+                          //   _type = 1;
+                          // }
                         });
-                      },
+                      },                      
                     ))),
               ],
               bottom: PreferredSize(
                   child: bottonsRow(),
                   preferredSize: Size(double.infinity, 90)),
             ),
-          ),body: ListView.builder(
-                itemCount: _queriesResults.length,
+          ),body: 
+          
+          
+           _pressed == 0?
+           _filteredQuery.length == 0 ? Center(child:Text("لا توجد ردود استعلامات  ")): ListView.builder(
+                itemCount:   _filteredQuery.length ,// _queriesResults.length,
                 itemBuilder: (context,index)=>
-                queryReplyCard(context,_queriesResults[index])),
+                 queryReplyCard(context,_filteredQuery[index]))
+                // queryReplyCard(context,_queriesResults[index])),
+                :_pressed == 1 && _pressed != 0?
+                _approved.length == 0 ? Center(child:Text("لا توجد استعلامات تم قبولها")):
+                 ListView.builder(
+                  itemCount:_approved.length ,
+                  itemBuilder: (context,index)=>
+                 queryReplyCard(context,_approved[index])):
+                 _pressed ==2 && _pressed != 3 && _pressed != 1  && _pressed != 0 ?
+                 _unapproved.length == 0 ? Center(child:Text("لا توجد استعلامات تم رفضها")):
+                 ListView.builder(
+                  itemCount:_unapproved.length ,
+                  itemBuilder: (context,index)=>
+                 queryReplyCard(context,_unapproved[index])):
+                 _waiting.length == 0 ? Center(child:Text("لا توجد استعلامات في انتظار الرد عليها ")):
+                 ListView.builder(
+                  itemCount:_waiting.length ,
+                  itemBuilder: (context,index){
+                
+               return  queryReplyCard(context,_waiting[index]);
+               
+               })
+                
         ));
   }
 
@@ -117,7 +208,10 @@ Widget bottonsRow() {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
           onPressed: () {
-        widget.model.getQueryResultData();
+           setState(() {
+             _pressed = 1;
+           });
+         
           }),
       SizedBox(width: 5),
       RaisedButton(
@@ -131,7 +225,12 @@ Widget bottonsRow() {
           //  padding: EdgeInsets.symmetric(horizontal: 50.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          onPressed: () {}),
+          onPressed: () {
+        
+           setState(() {
+             _pressed = 2;
+           });
+          }),
       SizedBox(width: 5),
       RaisedButton(
           color: Colors.white,
@@ -144,7 +243,16 @@ Widget bottonsRow() {
           // padding: EdgeInsets.symmetric(horizontal: 50.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-          onPressed: () {})
+          onPressed: () {
+            print(_filteredQuery.length);
+            print(_approved.length);
+            print(_waiting.length);
+              
+         
+           setState(() {
+             _pressed = 3;
+           });
+          })
     ],
   );
 }

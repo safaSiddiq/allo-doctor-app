@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 //import 'dart:js';
+import 'package:allo_doctor/models/Diagnosis.dart';
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/models/query.dart';
@@ -19,6 +20,11 @@ class ConnectedData extends Model {
   String token;
   String _patientId;
   var _statusCodes;
+  Medicine _medicine ;
+
+  Medicine get medicine{
+    return _medicine;
+  }
 
    get statusCodes{
     return _statusCodes;
@@ -66,7 +72,7 @@ class PatientModel extends ConnectedData {
     print("response stuse login :${response.statusCode}");
     print("response body :${response.body}");
 
-    final Map<dynamic, dynamic> responseData = json.decode(response.body);
+    final Map<dynamic, dynamic> responseData =  json.decode(response.body);
 
     // Patient patient = Patient.fromJson(responseData);
     // _patient = patient;
@@ -116,7 +122,7 @@ class PatientModel extends ConnectedData {
       // "userName": userName,
       //"password": password
     };
-    var jsonData = json.encode(patient);
+    var jsonData = utf8.encode(json.encode(patient));// json.decode(utf8.decode(response.bodyBytes));
     // var data = json.decode(response.body);
     try {
       final http.Response response = await http.post(
@@ -190,7 +196,7 @@ class PatientModel extends ConnectedData {
 
 
   Future<Patient> getPatient() async {
-    print(_patientId);
+  
    http.Response response = await http.get(
     //  "http://192.168.1.36:3000/patients/$_patientId",
         "http://34.71.92.1:3000/patients/$_patientId",
@@ -202,8 +208,8 @@ class PatientModel extends ConnectedData {
       print("response stuse get info :${response.statusCode}");
       print("response body :${response.body}");
     _statusCodes =response.statusCode;
-     var _patientData = json.decode(response.body);
-  var  _newPatient =Patient(
+     var _patientData =  json.decode(utf8.decode(response.bodyBytes)); //json.decode(response.body);
+  var  _newPatient = Patient(
       //  patientId: _patientId,
         patientId: _patientData['patientId'],
         firstName: _patientData['firstName'],
@@ -213,6 +219,7 @@ class PatientModel extends ConnectedData {
         avatar: _patientData["avatar"],
         email: _patientData["email"],
       );
+      
       _patient = _newPatient;
        return  _newPatient;
      // return Patient.fromJson(json.decode(response.body));
@@ -248,7 +255,8 @@ class PatientModel extends ConnectedData {
                 "Accept": "Application/json",
                 'Content-Type': 'Application/json'
               },
-              body: json.encode(query))
+              // json.decode(utf8.decode(response.bodyBytes));
+              body:utf8.encode(json.encode(query)))    ///json.encode(utf8.encode(query)))
           .then<Null>((http.Response response) {
         print("response stuse send query :${response.statusCode}");
         print("response body :${response.body}");
@@ -304,9 +312,7 @@ Future<Patient> updatePatientData({
 
  _statusCodes =response.statusCode;
      var _patientData = json.decode(response.body);
- print("dfmg${response.statusCode}");
- print("dfmg${response.body}");
- print("jhiuhi$_patientId");
+
      _isLoading = false;
   notifyListeners();
   var  _newPatient =Patient(
@@ -337,9 +343,9 @@ Future<Patient> updatePatientData({
         )
         .then<Null>((http.Response response) {
       final List<Query> getQueriesList = [];
-      final List<dynamic> queriesList = json.decode(response.body);
-      print("response doctors stuse get queries :${response.statusCode}");
-      print("response body :${response.body}");
+      final List<dynamic> queriesList = json.decode(utf8.decode(response.bodyBytes));    // json.decode(response.body);
+      // print("response doctors stuse get queries :${response.statusCode}");
+      // print("response body :${response.body}");
       // if (queriesList == null) {
       //   _isLoading = false;
       //   notifyListeners();
@@ -380,11 +386,14 @@ Future<Patient> updatePatientData({
         'Content-Type': 'Application/json'
       },
     ).then<Null>((http.Response response) {
+      var arab =  utf8.decode(response.bodyBytes); 
+      
       final List<Doctor> fetchedDoctorList = [];
       //final Map<String, dynamic> doctorListData = json.decode(response.body);
-      final List<dynamic> doctorListData = json.decode(response.body);
-      print("response doctors stuse get doctors :${response.statusCode}");
-      print("response body :${response.body}");
+      final List<dynamic> doctorListData =    json.decode(arab); //json.decode(response.body);
+      // print("response doctors stuse get doctors :${response.statusCode}");
+      // print("response body :${response.body}");
+        print("arab"+utf8.decode(response.bodyBytes));
 
       doctorListData.forEach((dynamic doctorData) {
         final Doctor doctor = Doctor(
@@ -466,10 +475,12 @@ Future<Patient> updatePatientData({
         'Content-Type': 'Application/json'
       },
     );
-      print("response stuse get info dr :${response.statusCode}");
-      print("response body :${response.body}");
+      // print("response stuse get info dr :${response.statusCode}");
+      // print("response body :${response.body}");
    
-     var _doctorData = json.decode(response.body);
+    var _doctorData = json.decode(response.body);
+    print("arab"+utf8.decode(response.bodyBytes));
+ //   var _doctorData =  utf8.decode(response.bodyBytes);
   var  _newDoctor =Doctor(
       //  patientId: _patientId,
         doctorId: _doctorData['doctorId'],
@@ -487,5 +498,25 @@ Future<Patient> updatePatientData({
      // return Patient.fromJson(json.decode(response.body));
   }
 
+Future<Medicine> getMedicine()async {
+  final http.Response response = await http.get("http://34.71.92.1:3000/patients/${_patientId}/medicines",
+     headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+  );
+    print("response mediccciiiinnnn :${response.statusCode}");
+      print("response body :${response.body}");
 
+   var responseData =  json.decode(utf8.decode(response.bodyBytes));//json.decode(response.body);
+   var _medicineData = Medicine(
+    medicineId: responseData["medicineId"],
+    medicineName: responseData["medicineName"],
+    dose: responseData["dose"],
+    patientId: responseData["patientId"],
+  );
+
+  _medicineData = _medicine;
+  return _medicineData;
+}
 }

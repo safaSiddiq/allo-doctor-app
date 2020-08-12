@@ -64,8 +64,8 @@ class _RegistrationASpatient extends State<RegistrationASpatient> {
 
   _onPressed() async {
     await widget.model.registrationPatient(
-      firstName: _firstNameController.text,
-      lastName: _lastNameController.text,
+      firstName:_firstNameController.text,
+      lastName:_lastNameController.text,
       email: _emailController.text,
       birthdate: _birthdata.toUtc().toIso8601String(),
       gender: "MALE",

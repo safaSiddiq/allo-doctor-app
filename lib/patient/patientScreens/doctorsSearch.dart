@@ -15,6 +15,8 @@ class DoctorsSearch extends StatefulWidget {
 }
 
 class _DoctorsSearchState extends State<DoctorsSearch> {
+  bool sort = false;
+  bool _isDisable = true;
   TextEditingController editingController = TextEditingController();
   String _selectedText1 = "بالتخصص";
   String _selectedText2 = "بالدرجة العلمية";
@@ -29,24 +31,53 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
   List<Doctor> _doctors;
+  List<Doctor> _filtered;
   Future<Patient> _patient;
+
   @override
   initState() {
+    widget.model.fetchDoctorsData().then((_) {
+      setState(() {
+        _doctors = widget.model.doctors;
+        filter();
+        //   _filtered = _doctors;
+      });
+    });
+
     widget.model.getPatient().then((_) {
       setState(() {
         _patient = widget.model.getPatient();
       });
     });
-
-    widget.model.fetchDoctorsData().then((_) {
-      setState(() {
-        _doctors = widget.model.doctors;
-      });
-    });
-
     super.initState();
   }
 
+  void _unsort() {
+    if (sort == true) {
+      setState(() {
+        _doctors.sort((a, b) => a.firstName.compareTo(b.firstName));
+      });
+    } else if (sort = false) {
+      setState(() {
+        _doctors = widget.model.doctors;
+      });
+    }
+  }
+
+  void filter() {
+    if (_selectedText1 != "بالتخصص") {
+      List<Doctor> tmpList = [];
+      for (int i = 0; i < _doctors.length; i++) {
+        if (_selectedText1 == _doctors[i].major) {
+          tmpList.add(_doctors[i]);
+        }
+      }
+
+      _filtered = tmpList;
+    } else if (_selectedText1 == "بالتخصص") {
+      _filtered = _doctors;
+    }
+  }
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainModel>(
         builder: (BuildContext context, Widget child, MainModel model) {
@@ -65,6 +96,11 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                     actions: <Widget>[
                       RawMaterialButton(
                           onPressed: () {
+                            showSearch(
+                                context: context,
+                                delegate:
+                                    DataSearch(_doctors, widget.model.patient));
+
                             //  showSearch(
                             //    context: context,
                             //   delegate: CustomSearchDelegate());
@@ -98,8 +134,24 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                               children: [
                                 SizedBox(width: 24),
                                 RaisedButton(
-                                    onPressed: () {},
+                                    onPressed: _isDisable == true
+                                        ? () {
+                                            // _doctors.sort((a, b) =>
+                                            //     a.firstName.compareTo(b.firstName));
+                                            // setState(() {
+                                            //   sort = !sort;
+                                            // });
+
+                                            setState(() {
+                                              sort = true;
+                                              _unsort();
+                                              _isDisable = false;
+                                            });
+                                          }
+                                        : null,
+                                    // color: sort == false?
                                     color: Colors.white,
+                                    //     : Colors.blueGrey[100],
                                     textColor: Colors.black,
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -127,7 +179,7 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                                 Container(
                                     height: 35,
                                     padding: EdgeInsets.only(left: 6),
-                                    alignment: Alignment.center,
+                                    alignment: Alignment.topRight,
                                     decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius:
@@ -146,10 +198,18 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                                           color: Colors.black,
                                           fontSize: 11,
                                           fontFamily: 'Tajawal-Medium'),
-                                      //hint: Text('الجنس'),
                                       value: _selectedText1,
-                                      items: <String>['بالتخصص', 'أنثى']
-                                          .map((String value) {
+                                      items: <String>[
+                                        // 'بالتخصص',
+                                        'بالتخصص',
+                                        'طبيب جراحة',
+                                        "طبيب باطينية",
+                                        "طبيب نساء",
+                                        "طبيب أذن و حنجرة",
+                                        "طبيب قلب",
+                                        "طبيب أسنان",
+                                        'طبيب عيون'
+                                      ].map((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
                                           child: Text(value),
@@ -159,6 +219,7 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                                         _selectedText1 = val;
                                         setState(() {
                                           _selectedText1 = val;
+                                          filter();
                                         });
                                       },
                                     ))),
@@ -208,76 +269,167 @@ class _DoctorsSearchState extends State<DoctorsSearch> {
                   future: _patient,
                   builder: (context, snapShot) {
                     if (snapShot.hasData) {
+                      if(_filtered.length == 0){
+                              return Center(child:Text("لا توجد نتائج"));
+                            }else{
                       return ListView.builder(
-                          itemCount: _doctors.length,
-                          itemBuilder: (context, index) => doctorCard(
-                              context, _doctors[index], snapShot.data, ));
+                          itemCount: _filtered.length, 
+                          itemBuilder: (context, index) {
+                        
+                            return doctorCard(
+                              context,
+                              _filtered[index],
+                              snapShot.data,
+                            );
+                          });}
+                      //         (context, index) {
+                      //       if (_selectedText1 != "بالتخصص") {
+                      //         //for(int i=0 ;i<=_doctors.length;i++){
+                      //     //  if (_selectedText1 == _doctors[index].major) {
+                      //     
+                      //           return doctorCard(
+                      //             context,
+                      //              _doctors[index],
+                      //             snapShot.data,
+                      //           );
+                      //         //  } else {
+                      //         //    return null;
+                      //         //  } //
+                      //        // }
+                      //       // });
+                      //       } 
+                      //       return doctorCard(
+                      //         context,
+                      //         _doctors[index],
+                      //         snapShot.data,
+                      //       );
+                      //   // });
+                      // // : (context, index) {
+
+                      // //       return doctorCard(
+                      // //         context,
+                      // //         _doctors[index],
+                      // //         snapShot.data,
+                      // //       );
+
+                      //  });
                     }
                     return Center(
                         child: SpinKitFadingCircle(
                       color: Color(0xFF87C9BF),
-                      //  color: Color(0xFF2B95AF),
                       size: 35,
                     ));
-                  })
-              //  ListView(
-              //   children: <Widget>[
-              //     SizedBox(height: 10),
-              //     Divider(),
-              //     doctorCard(context, true),
-              //     doctorCard(context, true),
-              //     doctorCard(context, true),
-              //     doctorCard(context, true),
-              //     doctorCard(context, true)],)
-              ));
+                  })));
     });
   }
 }
 
-class CustomSearchDelegate extends SearchDelegate {
+class DataSearch extends SearchDelegate<String> {
+  final List<Doctor> listWords;
+
+  final Patient _patient;
+  DataSearch(this.listWords, this._patient)
+      : super(
+          searchFieldLabel: "بحث",
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.search,
+        );
+
   @override
   List<Widget> buildActions(BuildContext context) {
+    //Actions for app bar
     return [
       IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            query = '';
+          })
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
+    //leading icon on the left of the app bar
     return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
-    );
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
+        ),
+        onPressed: () {
+          close(context, null);
+        });
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return null;
+    // show some result based on the selection
+    final suggestionList = listWords;
+
+    return Container(
+        color: Colors.teal,
+        child: FutureBuilder(
+            //  future: _patient,
+            builder: (context, snapShot) {
+          if (snapShot.hasData) {
+            ListView.builder(
+              itemBuilder: (context, index) => doctorCard(
+                context,
+                suggestionList[index],
+                snapShot.data,
+              ),
+              itemCount: suggestionList.length,
+            );
+          }
+          ;
+
+          return Center(
+              child: SpinKitFadingCircle(
+            color: Color(0xFF87C9BF),
+            //  color: Color(0xFF2B95AF),
+            size: 35,
+          ));
+        }));
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return null;
+    final suggestionList = query.isEmpty
+        ? listWords
+        : listWords
+            .where((p) =>
+                p.firstName.contains(RegExp(query, caseSensitive: false)) ||
+                p.lastName.contains(RegExp(query, caseSensitive: false)))
+            .toList();
+    return ListView.builder(
+      itemBuilder: (context, index) => doctorCard(
+        context,
+        suggestionList[index],
+        _patient,
+      ),
+      itemCount: suggestionList.length,
+    );
+  }
+
+  ThemeData appBarTheme(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return theme.copyWith(
+      primaryColor: Color(0xFF2B95AF),
+
+      cardColor: Colors.red,
+      primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.white),
+
+      primaryColorBrightness: Brightness.light,
+      textTheme: theme.textTheme.copyWith(
+        title: TextStyle(fontWeight: FontWeight.normal, color: Colors.white),
+      ),
+      // these ↓ do not work ☹️
+      appBarTheme:
+          theme.appBarTheme.copyWith(color: Colors.white, elevation: 0),
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+          hintStyle: TextStyle(
+            color: Colors.white,
+          ),
+          border: UnderlineInputBorder()),
+    );
   }
 }
-
-//  SearchBar<Post>(
-
-//           searchBarStyle: SearchBarStyle(
-
-//               padding: EdgeInsets.symmetric(horizontal: 20),
-//               backgroundColor: Colors.grey[200]),
-//           onSearch: search,
-//           onItemFound: (Post post, int index) {
-//             return ListTile(
-//               title: Text(''),
-//               subtitle: Text(''),
-//             );
-//           },

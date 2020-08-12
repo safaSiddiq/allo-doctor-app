@@ -20,6 +20,8 @@ class _RegistrationASdoctor extends State<RegistrationASdoctor> {
 
   
    String _selectedText1 = 'الجنس';
+   String _selectedText ="اختر التخصص";
+   String _major;
 
  TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
@@ -47,7 +49,7 @@ class _RegistrationASdoctor extends State<RegistrationASdoctor> {
       birthdate: _birthdate.toUtc().toIso8601String(),
       gender: "male",
       avatar: "",
-      major: _majorController.text,
+      major: _major,
       bio:_bioController.text
     );
 
@@ -83,46 +85,54 @@ class _RegistrationASdoctor extends State<RegistrationASdoctor> {
                 firstName(),
                 SizedBox(height: 20.0),
                 lastName(),   
-               
-                    // child: DropdownButtonHideUnderline(child: 
-                    //  DropdownButton<String>(
-                    //    icon: Container(      
-                    //      padding: EdgeInsets.only(left: 7),
-                    //      child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
-                    //    ),          
-                    //   style: TextStyle(
-                    //     color: Colors.black,
-                    //     fontSize: 18,
-                    //     fontFamily: 'Tajawal-Medium',            
-                    //   ),
-                    //   value: _selectedText,
-                    //   items: <String>[
-                    //     'اختر التخصص',
-                    //     'طبيب جراحة',         
-                    //     "طبيب باطينية",
-                    //     "طبيب نساء",
-                    //     "طبيب أذن و حنجرة",
-                    //     "طبيب قلب",
-                    //     "طبيب أسنان",
-                    //     'طبيب عيون'
-                    //   ].map((String value) {
-                    //     return DropdownMenuItem<String>(
-                    //       value: value,
-                    //       child: Text(value),
-                    //     );
-                    //   }).toList(),
-                    //   onChanged: (String val) {       
-                    //     setState(() {
-                    //       _selectedText = val;
-                    //     setState(() {
-                    //       _major =_selectedText;
-                    //     });
-                    //     });
-                    //   },
-                    // ))
-                    SizedBox(height:5),
-                    major(),
-                SizedBox(height: 10.0),
+                   SizedBox(height:20),
+                 Container(
+                    alignment: Alignment.topRight,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8.0)),
+                    margin: EdgeInsets.only(
+                      left: 120.0,
+                    ),
+                    child: DropdownButtonHideUnderline(child: 
+                     DropdownButton<String>(
+                       icon: Container(      
+                         padding: EdgeInsets.only(left: 7),
+                         child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
+                       ),          
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'Tajawal-Medium',            
+                      ),
+                      value: _selectedText,
+                      items: <String>[
+                        'اختر التخصص',
+                        'طبيب جراحة',         
+                        "طبيب باطينية",
+                        "طبيب نساء",
+                        "طبيب أذن و حنجرة",
+                        "طبيب قلب",
+                        "طبيب أسنان",
+                        'طبيب عيون'
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String val) {       
+                        setState(() {
+                          _selectedText = val;
+                        setState(() {
+                          _major =_selectedText;
+                        });
+                        });
+                      },
+                    ))),
+                
+                  //  major(),
+                SizedBox(height: 5.0),
                 emailAdress(),
                 SizedBox(height: 20.0),
                 Text(
@@ -159,7 +169,7 @@ class _RegistrationASdoctor extends State<RegistrationASdoctor> {
                     child: DropdownButtonHideUnderline(child: 
                      DropdownButton<String>(
                        icon: Container(
-                        padding: EdgeInsets.only(right: 2,),
+                        padding: EdgeInsets.only(right: 2,left: 4),
                          child: Icon(Icons.arrow_drop_down,size: 24,color: Color(0xFF2B95AF),),
                        ),  
                       style: TextStyle(

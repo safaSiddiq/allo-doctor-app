@@ -55,7 +55,7 @@ Widget patientCard(BuildContext context, Patient _patient) {
                           child: SizedBox(
                               width: 70.0,
                               height: 70.0,
-                              child: _patient.avatar == "null"
+                              child: _patient.avatar == ""
                                   ? Image.asset('assets/Patient.png',
                                       fit: BoxFit.fill)
                                   : Image.network(_patient.avatar)))),

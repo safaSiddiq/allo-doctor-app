@@ -14,7 +14,7 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
      GlobalKey<RefreshIndicatorState>();
-  bool isOnline = true;
+  
 
   final mainColor = LinearGradient(
     begin: FractionalOffset.topCenter,
@@ -75,25 +75,7 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
                                                     fit: BoxFit.fill)
                                                 : Image.network(
                                                     snapShot.data.avatar)))),
-                                isOnline
-                                    ? Container(
-                                        alignment: Alignment.bottomRight,
-                                        margin: EdgeInsets.only(
-                                            right: 3, bottom: 5),
-                                        child: Container(
-                                          height: 10,
-                                          width: 10,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 1,
-                                            ),
-                                            shape: BoxShape.circle,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
+                                
                               ],
                             ));
                       } else {
@@ -164,12 +146,7 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
                                   size: 30,
                                 ));
                               }))),
-                  RawMaterialButton(
-                      child:
-                          iconDrawer(' استعلام عام', Icons.create_new_folder),
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/FillQueryScreen");
-                      }),
+                              
                   RawMaterialButton(
                       child: iconDrawer('بحث عن طبيب', Icons.search),
                       onPressed: () {
@@ -232,7 +209,7 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
                       margin: EdgeInsets.only(right: 25),
                       alignment: Alignment.topRight,
                       child: Text(
-                          'اخر ردود الاستعلامات ' + snapShot.data.firstName,
+                          'اخر ردود الاستعلامات ',
                           style: TextStyle(fontSize: 18, color: Colors.white)),
                     ),
                     Container(

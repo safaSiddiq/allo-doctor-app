@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allo_doctor/models/Diagnosis.dart';
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/models/query.dart';
@@ -18,6 +19,12 @@ class ConnectedDatas extends Model{
   String _doctorId;
   String invitationCode;
   List _invitationCodes=[];
+  Medicine _newMedicine;
+  List<String> _patientIds = [];
+   
+   List<String> get patientIds{
+     return _patientIds;
+   }
   
 List<String >get initationCodes {
   return _invitationCodes;
@@ -38,6 +45,10 @@ List<Query> get queries{
   return _queries;
 }
 
+
+Medicine get newMedicine{
+  return _newMedicine;
+}
 }
 
 class UtilityModels extends ConnectedDatas {
@@ -258,6 +269,7 @@ print("body invetation${response.body}");
           doctorId: queryData["doctorId"]
         );
         fetchedQueries.add(query);
+        _patientIds.add(query.patientId);
       });
 
       _queries = fetchedQueries;
@@ -306,7 +318,7 @@ print("body invetation${response.body}");
     notifyListeners();
     await http.get(
    // "http://192.168.1.36:3000/doctors",
-    "http://34.71.92.1:3000//doctors",
+    "http://34.71.92.1:3000/patients",
 
       headers: {
         "Accept": "Application/json",
@@ -395,6 +407,41 @@ print("dfmg${response.body}");
      return _newDoctor;
   
 //  return  Patient.fromJson(json.decode(response.body));
+
+}
+
+
+
+Future addmedicine({String id,String medicineName ,String  dose} )async{
+
+  final Map<String,dynamic> medicine = {
+    "medicineName": medicineName,
+    "dose":dose,
+    //"patientId":id
+
+};
+
+  final http.Response response = await http.post("http://34.71.92.1:3000/patients/$id/medicines",
+     headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+      body: json.encode(medicine)
+  );
+
+  print("mediciiiiine   ${response.statusCode}");
+  print(response.body);
+
+  var responseData = json.decode(response.body);
+
+  var _medicineData = Medicine(
+    medicineId: responseData["medicineId"],
+    medicineName: responseData["medicineName"],
+    dose: responseData["dose"],
+    patientId: responseData["patientId"],
+  );
+  _medicineData = _newMedicine;
+  return _medicineData;
 
 }
 

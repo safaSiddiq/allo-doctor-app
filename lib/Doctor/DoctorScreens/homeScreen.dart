@@ -14,7 +14,7 @@ class HomeScreenDr extends StatefulWidget {
 class _HomeScreenDrState extends State<HomeScreenDr> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
-  bool isOnline = true;
+
   bool _isDisabled = false;
   int value = 0;
 
@@ -26,11 +26,12 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
-
-  List<Query> _queries;
+ List<Query> _queries;
+ 
   Future<Doctor> _doctor;
   @override
   void initState() {
+    
     widget.model.getDoctor().then((_) {
       setState(() {
         _doctor = widget.model.getDoctor();
@@ -131,7 +132,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
 
   @override
   Widget build(BuildContext context) {
-    MainModel model;
+    //MainModel model;
     return Container(
         decoration: BoxDecoration(gradient: mainColor),
         child: Scaffold(
@@ -166,25 +167,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                                                     : Image.network(
                                                         snapShot.data.avatar,
                                                         fit: BoxFit.fill)))),
-                                isOnline
-                                    ? Container(
-                                        alignment: Alignment.bottomRight,
-                                        margin: EdgeInsets.only(
-                                            right: 3, bottom: 5),
-                                        child: Container(
-                                          height: 10,
-                                          width: 10,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 1,
-                                            ),
-                                            shape: BoxShape.circle,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
+                              
                               ],
                             ));
                       } else {

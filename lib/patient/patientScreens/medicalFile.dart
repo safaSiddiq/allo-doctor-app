@@ -8,6 +8,10 @@ class MedicalFile extends StatefulWidget {
 }
 
 class _MedicalFileState extends State<MedicalFile> {
+
+
+
+
   bool isOnline=true;
   String _selectedText = "ذكر";
   String _selectedText1 = "A+";
@@ -40,6 +44,7 @@ class _MedicalFileState extends State<MedicalFile> {
             Color(0xFF2B95AF)
           ],
         );
+ 
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -11,7 +11,7 @@ import 'package:allo_doctor/patient/patientScreens/diagnosisView.dart';
 import 'package:allo_doctor/patient/patientScreens/diagnosisesScreesn.dart';
 import 'package:allo_doctor/patient/patientScreens/doctorFile.dart';
 import 'package:allo_doctor/patient/patientScreens/doctorsSearch.dart';
-import 'package:allo_doctor/patient/patientScreens/fillQuery.dart';
+
 import 'package:allo_doctor/patient/patientScreens/fillQueryDr.dart';
 import 'package:allo_doctor/patient/patientScreens/homeScreeen.dart';
 import 'package:allo_doctor/patient/patientScreens/massagesScreen.dart';
@@ -58,29 +58,34 @@ class MyApp extends StatelessWidget {
               //  primaryTextTheme: TextTheme(body1:TextStyle(color: Colors.white))
             ),
             routes: {
-              "/LoginScreen":(BuildContext context) => LoginScreen(model),
-              "/RegistrationASpatient":(BuildContext context) => RegistrationASpatient(model),
-              "/RegistrationASdoctor":(BuildContext context) => RegistrationASdoctor(model),
-              "/InvitationAsk":(BuildContext context )=>InvitationAsk(model),
-            "/InvitationCkech":(BuildContext context)=>InvitationCkech(model),
-              "/homeScreenPatient": (BuildContext context) => HomeScreenPatient(model),
-              "/FillQueryScreen": (BuildContext context) =>
-                  FillQueryScreen(model),
+              "/LoginScreen": (BuildContext context) => LoginScreen(model),
+              "/RegistrationASpatient": (BuildContext context) =>
+                  RegistrationASpatient(model),
+              "/RegistrationASdoctor": (BuildContext context) =>
+                  RegistrationASdoctor(model),
+              "/InvitationAsk": (BuildContext context) => InvitationAsk(model),
+              "/InvitationCkech": (BuildContext context) =>
+                  InvitationCkech(model),
+              "/homeScreenPatient": (BuildContext context) =>
+                  HomeScreenPatient(model),
+
               "/CallCenterScreen": (BuildContext context) => CallCenterScreen(),
               "/ChatScreen": (BuildContext context) => ChatScreen(),
               "/DiagnosisesScreen": (BuildContext context) =>
                   DiagnosisesScreen(),
               "/DiagnosisViewScreen": (BuildContext context) =>
-                  DiagnosisViewScreen(model,query),
-              "/DoctorFileScreen": (BuildContext context) => DoctorFileScreen(model,doctor,snapShot),
+                  DiagnosisViewScreen(model, query),
+              "/DoctorFileScreen": (BuildContext context) =>
+                  DoctorFileScreen(model, doctor, snapShot),
               "/DoctorsSearch": (BuildContext context) => DoctorsSearch(model),
               "/FillQueryDrScreen": (BuildContext context) =>
-                  FillQueryDrScreen(model,doctor,snapShot),
+                  FillQueryDrScreen(model, doctor, snapShot),
               "/MassagesScreen": (BuildContext context) => MassagesScreen(),
               "/MedicalFile": (BuildContext context) => MedicalFile(),
               "/PesronalinfoScreen": (BuildContext context) =>
                   PesronalinfoScreen(model),
-              "/QueriesReplaies": (BuildContext context) => QueriesReplaies(model),
+              "/QueriesReplaies": (BuildContext context) =>
+                  QueriesReplaies(model),
               "/HomeScreenDr": (BuildContext context) => HomeScreenDr(model),
               "/DrChatScreen": (BuildContext context) => DrChatScreen(),
               "/Diagnosis": (BuildContext context) => Diagnosis(),
@@ -88,12 +93,14 @@ class MyApp extends StatelessWidget {
               "/PatientDiagnosises": (BuildContext context) =>
                   PatientDiagnosises(),
               "/PatientMidicalFile": (BuildContext context) =>
-                  PatientMidicalFile(model,patient),
-              "/PatientsScreen": (BuildContext context) => PatientsScreen(model),
-              "/DrPersonalInfo": (BuildContext context) => DrPersonalInfo(model),
+                  PatientMidicalFile(model, patient),
+              "/PatientsScreen": (BuildContext context) =>
+                  PatientsScreen(model),
+              "/DrPersonalInfo": (BuildContext context) =>
+                  DrPersonalInfo(model),
               "/Queries": (BuildContext context) => Queries(model),
               //"/QueryView": (BuildContext context) => QueryView(model,query),
-             // "/WriteQuery": (BuildContext context) => WriteQuery(),
+              // "/WriteQuery": (BuildContext context) => WriteQuery(),
             },
             home: Directionality(
               textDirection: TextDirection.rtl,

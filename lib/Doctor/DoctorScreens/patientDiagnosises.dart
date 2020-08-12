@@ -7,15 +7,27 @@ class PatientDiagnosises extends StatefulWidget {
 }
 
 class _PatientDiagnosisesState extends State<PatientDiagnosises> {
-  bool isOnline = true;
+final mainColor = LinearGradient(
+    begin: FractionalOffset.bottomCenter,
+    stops: [
+      0.0,
+      1.0,
+    ],
+    colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
+  );
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.teal,
+   return Container(
+     decoration: BoxDecoration(
+       gradient: mainColor
+     ),
+   child:
+    Scaffold(
+      backgroundColor: Color(0xff00000),
       appBar:  PreferredSize(
             preferredSize: Size(double.infinity, 105), 
             child:  AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xff0000),
         elevation: 0,
        
         actions: <Widget>[
@@ -37,24 +49,7 @@ class _PatientDiagnosisesState extends State<PatientDiagnosises> {
                           height: 40.0,
                           child: Image.asset('assets/Doctor.png',
                               fit: BoxFit.fill)))),
-                                  isOnline
-                                ? Container(
-                                    alignment: Alignment.bottomRight,
-                                    margin: EdgeInsets.only(bottom: 5),
-                                    child: Container(
-                                      height: 10,
-                                      width: 10,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 1,
-                                        ),
-                                        shape: BoxShape.circle,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
+                                  
             ],
               ),),
             
@@ -97,6 +92,6 @@ class _PatientDiagnosisesState extends State<PatientDiagnosises> {
           
         ],
       )),
-    );
+    ));
   }
 }
