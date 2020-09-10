@@ -1,4 +1,7 @@
+
+
 import 'package:allo_doctor/models/Diagnosis.dart';
+import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/models/query.dart';
 import 'package:allo_doctor/pages/ui_widgets/doneWidget.dart';
 import 'package:allo_doctor/pages/ui_widgets/onLoading.dart';
@@ -7,6 +10,7 @@ import 'package:allo_doctor/pages/ui_widgets/wrongWidget.dart';
 import 'package:allo_doctor/patient/patientScreens/medicalFile.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -32,9 +36,20 @@ class _WriteQueryState extends State<WriteQuery> {
   var _mControllers = <TextEditingController>[];
   var _dControllers = <TextEditingController>[];
 
+  
+  var _xrayControllers = <TextEditingController>[];
+  var _xrayNotesController = <TextEditingController>[];
+
+  var _analysisControllers = <TextEditingController>[];
+  var _analaysisNotesController = <TextEditingController>[];
+  
+
   // String medicine = '';
   // String note = '';
-  bool boolValue = false;
+
+
+
+ List<Widget>_listOfxrays=[];
   final mainColor = LinearGradient(
     begin: FractionalOffset.bottomCenter,
     stops: [
@@ -82,13 +97,53 @@ class _WriteQueryState extends State<WriteQuery> {
     });
   }
 
+Future<Patient> getPatientsData() async {
+ var id =widget.query.patientId;
+  http.Response response = await http.get(
+   // "http://192.168.1.36:3000/doctors",
+    "http://34.71.92.1:3000/patients/$id",
+
+      headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+    );
+  
+      //final Map<String, dynamic> doctorListData = json.decode(response.body);
+    var data = json.decode(response.body);
+      print("response doctors stuse get patients :${response.statusCode}");
+      print("response body :${response.body}");
+
+    
+        final  patient = Patient(
+          patientId: data["patientId"],
+          firstName: data['firstName'],
+          lastName: data['lastName'],
+       
+          birthdate: data["birthdate"],
+          gender: data["gender"],
+         
+          avatar: data["avatar"],
+          email: data["email"],
+        );
+     return patient;
+
+  }
+
+
   @override
   void initState() {
+     getPatientsData().then((_){
+
+     });
+    
     setState(() {
      _listOfWidgets.add(_medicineField());
       _listOfAnalaysis.add(_analaysisField());
+      _listOfxrays.add(_xRay());
     });
 
+  getPatientsData();
     // widget.model.writeQueryResult(queryId:widget.query.queryId,queryResult: "hello",patientId: widget.query.patientId,queryType: 1);
     super.initState();
   }
@@ -111,7 +166,7 @@ class _WriteQueryState extends State<WriteQuery> {
                           width: 40.0,
                           height: 40.0,
                           child: Image.asset('assets/Doctor.png',
-                              fit: BoxFit.fill) //:
+                              fit: BoxFit.fill)  //:
                           //NetworkImage(_doctor.avatar)
                           )))
             ],
@@ -121,24 +176,44 @@ class _WriteQueryState extends State<WriteQuery> {
             margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: ListView(
               children: <Widget>[
-                Row(
+                FutureBuilder(
+                  future: getPatientsData(),
+                  builder: (context,snapShot){
+                      if(snapShot.hasData){
+                        return 
+                   
+                 Row(
                   textDirection: TextDirection.rtl,
                   children: <Widget>[
-                    Text(": " "تشخيص المريض  ",
+                    Text(" : " "تشخيص المريض  ",
                         style: TextStyle(color: Colors.white, fontSize: 14)),
-                    //  Text(_patient.firstName + _patient.lastName)
+             
+                
+                  Text( snapShot.data.firstName +" "+snapShot.data.lastName,
+                  style: TextStyle(color:Colors.white),
+                  )
+            
                   ],
-                ),
+                );
+                  }else{
+             return  Center(
+                        child: SpinKitFadingCircle(
+                      color: Color(0xFF87C9BF),           
+                      size: 35,
+                    ));
+           }
+                }) ,
                 SizedBox(height: 10),
                 Container(
                     margin: EdgeInsets.only(right: 80),
                     child: Row(
                       textDirection: TextDirection.rtl,
                       children: <Widget>[
-                        Text(": " "تاريخ التشخيص ",
+                        Text(" : " "تاريخ  الاستعلام ",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 14)),
-                        // Text(_query.queryDate)
+                      Text(widget.query.queryDate.substring(0,10),  style:
+                                TextStyle(color: Colors.white,))
                       ],
                     )),
                 SizedBox(height: 10),
@@ -261,7 +336,11 @@ class _WriteQueryState extends State<WriteQuery> {
 
                       ),
                 ),
-                Container(child: addDeleteButtons()),
+            Container(child: addDeleteButtons( () {
+              i++;
+              if (i <= 5) {
+                _addmidicineToList();
+              }})),
                 SizedBox(height: 10),
                 Text(
                   "التحاليل المطلوبة",
@@ -276,7 +355,9 @@ class _WriteQueryState extends State<WriteQuery> {
                       color: Colors.white),
                   child: Column(children: _listOfAnalaysis),
                 ),
-                Container(child: addDeleteButtons()),
+               Container(child: addDeleteButtons((){
+                 _addAnlaysisToList();
+               })),
                 SizedBox(height: 10),
                 Text(
                   "الأشعة المطلوبة",
@@ -290,21 +371,17 @@ class _WriteQueryState extends State<WriteQuery> {
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.white),
                   child: Column(
-                    children: <Widget>[
-                      CheckboxListTile(
-                          title: Text("نوع الصورة",
-                              textDirection: TextDirection.rtl,
-                              style: TextStyle(color: Colors.black)),
-                          subtitle: Text(
-                            "تصوير" "\n" "ملاحظات",
-                            textDirection: TextDirection.rtl,
-                          ),
-                          value: boolValue,
-                          onChanged: null),
-                      addDeleteButtons()
-                    ],
+                    children: _listOfxrays
+                    
+                  
                   ),
+                  
                 ),
+                Container(child: 
+             
+               addDeleteButtons((){
+                  _addXray();
+                })),
                 SizedBox(height: 10),
                 Text(
                   "العمليات",
@@ -313,14 +390,17 @@ class _WriteQueryState extends State<WriteQuery> {
                 ),
                 SizedBox(height: 10),
                 Container(
-                  height: 140,
+                  //height: 140,
+                padding: EdgeInsets.symmetric(vertical:5),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.white),
-                  child: Text(''),
+                  child: TextFormField(
+                    maxLines: 10,
+                  ),
                 ),
                 SizedBox(height: 15),
-                saveButton(() async {
+                saveButton(() async {   
                   await writeQueryResult(
                       queryResult: _queryResultController.text,
                       queryId: widget.query.queryId,
@@ -342,7 +422,7 @@ class _WriteQueryState extends State<WriteQuery> {
                     await Future.delayed(Duration(seconds: 2)).then((_) {
                       Navigator.pop(context);
                     });
-                  }
+                 }
                 })
               ],
             ),
@@ -372,7 +452,7 @@ class _WriteQueryState extends State<WriteQuery> {
         queryId: widget.query.queryId,
         queryType: 1,
         patientId: widget.query.patientId,
-        queryResultDate: "2020-07-18T21:30:56.000Z",
+        queryResultDate: DateTime.now().toUtc().toIso8601String(),
         approved: true,
         emergency: false);
   }
@@ -392,29 +472,60 @@ class _WriteQueryState extends State<WriteQuery> {
 
     _mControllers.add(_medicineName);
     _dControllers.add(_dose);
-    RelativeRect buttonMenuPosition(BuildContext c) {
-      final RenderBox bar = c.findRenderObject();
-      final RenderBox overlay = Overlay.of(c).context.findRenderObject();
-      final RelativeRect position = RelativeRect.fromRect(
-        Rect.fromPoints(
-          bar.localToGlobal(bar.size.center(Offset.zero), ancestor: overlay),
-          bar.localToGlobal(bar.size.center(Offset.zero), ancestor: overlay),
-        ),
-        Offset.zero & overlay.size,
-      );
-      return position;
-    }
+    // RelativeRect buttonMenuPosition(BuildContext c) {
+    //   final RenderBox bar = c.findRenderObject();
+    //   final RenderBox overlay = Overlay.of(c).context.findRenderObject();
+    //   final RelativeRect position = RelativeRect.fromRect(
+    //     Rect.fromPoints(
+    //       bar.localToGlobal(bar.size.center(Offset.zero), ancestor: overlay),
+    //       bar.localToGlobal(bar.size.center(Offset.zero), ancestor: overlay),
+    //     ),
+    //     Offset.zero & overlay.size,
+    //   );
+      //return position;
+   // }
 
-    return GestureDetector(
-      child: Container(
+    return  Container(
         margin: EdgeInsets.only(bottom: 6, top: 6),
         padding: EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: Colors.grey[200],
             border: Border.all(color: Colors.grey)),
-        child: Column(
-          children: <Widget>[
+       child:
+    
+    
+    
+    ListTile(
+       trailing: Container(
+      //  alignment: Alignment.center,
+      padding: EdgeInsets.only(top:55),
+         child:
+        IconButton(
+         
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+              
+              size: 30,
+            ),
+            onPressed: () {
+              setState(() {
+              //  _listOfphs.removeAt(index);
+              });
+            },
+          )),
+    
+     title: 
+    //  Container(
+    //     margin: EdgeInsets.only(bottom: 6, top: 6),
+    //     padding: EdgeInsets.symmetric(horizontal: 5),
+    //     decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(8),
+    //         color: Colors.grey[200],
+    //         border: Border.all(color: Colors.grey)),
+      //  child: Column(
+        //  children: <Widget>[
             Container(
                 padding: EdgeInsets.symmetric(
                   vertical: 1,
@@ -423,10 +534,16 @@ class _WriteQueryState extends State<WriteQuery> {
                     textDirection: TextDirection.rtl,
                     child: TextFormField(
                       controller: _medicineName,
+                     
                       textDirection: TextDirection.rtl,
-                      decoration: InputDecoration(hintText: "اسم الدواء"),
+                      decoration: InputDecoration(hintText: "اسم الدواء",//hintStyle: TextStyle(fontSize: 12)
+                      ),
                     ))),
-            Container(
+          subtitle:   Column(
+            children: <Widget>[
+
+         
+          Container(
               padding: EdgeInsets.symmetric(
                 vertical: 1,
               ),
@@ -441,71 +558,41 @@ class _WriteQueryState extends State<WriteQuery> {
                     onSaved: (value) {},
                   )),
             ),
-            SizedBox(height: 3)
-          ],
-        ),
-      ),
-      onTap: () {
-        final position = buttonMenuPosition(context);
-        showMenu(
-          context: context,
-          position:
-              position, // RelativeRect.fromLTRB(, 500.0, 500.0),//RelativeRect.fromLTRB(100, 100, 100, 100),
-          items: <PopupMenuEntry>[
-            PopupMenuItem(
-                height: 10,
-                //  value: this._index,
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "حذف",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ),
-                      onPressed: () {},
-                    ),
-                  ],
-                ))
-          ],
-        );
-
-//    return Container(
-//    margin: EdgeInsets.symmetric(vertical: 10),
-//    height: 100,
-//     width: 100,
-//    child:
-//    PopupMenuButton(
-//     child: FlutterLogo(),
-//     itemBuilder: (context) {
-//       return <PopupMenuItem>[
-//          PopupMenuItem(child: Icon(Icons.delete,color: Colors.green,))];
-//     },
-//  // ),
-// );
-      },
-    );
-  }
-
-_feild(){
-  return ListTile(
-    trailing:  Container(
-                padding: EdgeInsets.symmetric(
-                  vertical: 1,
-                ),
-                child: Directionality(
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 1,
+              ),
+              child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextFormField(
+                    controller: _dose,
                     textDirection: TextDirection.rtl,
-                    child: TextFormField(
-                     // controller: _medicineName,
-                      textDirection: TextDirection.rtl,
-                      decoration: InputDecoration(hintText: "اسم الدواء"),
-                    ))), 
-  );
-}
-
+                    decoration: InputDecoration(
+                      hintText: "مدة الاستعمال",
+                    ),
+                    onSaved: (value) {},
+                  )),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 1,
+              ),
+              child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: TextFormField(
+                    controller: _dose,
+                    textDirection: TextDirection.rtl,
+                    decoration: InputDecoration(
+                      hintText: "ملاحظات",
+                    ),
+                    onSaved: (value) {},
+                  )),
+            ),
+          ],
+          )
+    )
+     );
+  }
 
 
   _addAnlaysisToList() {
@@ -517,29 +604,48 @@ _feild(){
   }
 
   _analaysisField() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 6),
-          Container(
+
+     TextEditingController _analaysis = TextEditingController();
+    TextEditingController _notes = TextEditingController();
+    _analysisControllers.add(_analaysis);
+    _analaysisNotesController.add(_notes);
+     int index = _listOfAnalaysis.length;
+    return Column(
+
+    children:<Widget>[
+     ListTile(
+
+     trailing: IconButton(
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+            onPressed: () {
+              setState(() {
+           _listOfAnalaysis.removeAt(index);
+              });
+            },
+          ),
+
+      title:    Container(
               padding: EdgeInsets.symmetric(
                 vertical: 1,
               ),
               child: Directionality(
                   textDirection: TextDirection.rtl,
                   child: TextFormField(
-                    //controller: _medicineName,
+                    controller: _analaysis,
                     textDirection: TextDirection.rtl,
                     decoration: InputDecoration(hintText: "اسم التحليل"),
                   ))),
-          Container(
+        subtitle:  Container(
             padding: EdgeInsets.symmetric(
               vertical: 1,
             ),
             child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: TextFormField(
-                  // controller: _dose,
+                   controller: _notes,
                   textDirection: TextDirection.rtl,
                   decoration: InputDecoration(
                     hintText: "ملاحظات",
@@ -547,21 +653,19 @@ _feild(){
                   onSaved: (value) {},
                 )),
           ),
-          SizedBox(
-            height: 10,
-          )
-        ],
-      ),
-    );
+    
+    ),
+    Divider()
+    ]);
   }
 
-  Widget addDeleteButtons() {
+  Widget addDeleteButtons(Function function) {
     return Container(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         RaisedButton(
-            color: Colors.teal,
+            color: Color(0xFF2B95AF),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -575,18 +679,9 @@ _feild(){
                 )
               ],
             ),
-            onPressed: () {
-              i++;
-              if (i <= 5) {
-                _addmidicineToList();
-              }
-              // return CheckboxListTile(
-              //   title: Text(medicine),
-              //   value: boolValue,
-              //   onChanged: (bool boolValue){
-              //     boolValue = true;
-              //   });
-
+            onPressed: function
+           
+      
               // return showDialog(
               //     context: context,
               //     builder: (context) {
@@ -623,85 +718,45 @@ _feild(){
               //     ],
               //   ));
               // });
-            }),
-        RaisedButton(
-            color: Colors.red,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  'حذف',
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(width: 5),
-                Container(
-                    margin: EdgeInsets.only(bottom: 13),
-                    child: Icon(
-                      Icons.minimize,
-                      color: Colors.white,
-                    ))
-              ],
             ),
-            onPressed: () {
-              // print(widget.query.patientId);
-              //    print(_mControllers[0].text);
-              _onPressed();
-            })
       ],
     ));
   }
 
-  // Widget inputColumn() {
-  //   return Column(
-  //     textDirection: TextDirection.rtl,
-  //     children: <Widget>[
-  //       Container(
-  //         padding: EdgeInsets.symmetric(vertical: 10),
-  //         child: Directionality(
-  //             textDirection: TextDirection.rtl,
-  //             child: TextFormField(
-  //               textDirection: TextDirection.rtl,
-  //               decoration: InputDecoration(hintText: "اسم الدواء"),
-  //               onSaved: (value) {
-  //                 medicine = value;
-  //               },
-  //             )),
-  //       ),
-  //       Container(
-  //         padding: EdgeInsets.symmetric(vertical: 1),
-  //         child: Directionality(
-  //             textDirection: TextDirection.rtl,
-  //             child: TextFormField(
 
-  //               textDirection: TextDirection.rtl,
-  //               decoration: InputDecoration(
-  //                 hintText: "الجرعة" ,
-  //               ),
-  //               onSaved: (value) {
-  //                 note = value;
-  //               },
-  //             )),
-  //       ),
-  //       SizedBox(height:5),
-  //       Container(
-  //           padding: EdgeInsets.symmetric(horizontal: 5),
-  //           decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(8),
-  //               color: Colors.deepOrangeAccent),
-  //           child: RawMaterialButton(
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //             },
-  //             child: Text(
-  //               "تم",
-  //               style: TextStyle(color: Colors.white, fontSize: 16),
-  //             ),
-  //           ))
-  //     ],
-  //   );
-  // }
 
-  Future addmedicine({String id, String medicineName, String dose}) async {
+  Future addAnalysis({String id, String analysisType, String reason,String date}) async {
+    final Map<String, dynamic> medicine = {
+      "analysisType": analysisType,
+      "reason": reason,
+      "analysisDate":date
+      //"patientId":id
+    };
+
+    final http.Response response = await http.post(
+        "http://34.71.92.1:3000/patients/ed4059a1-0f06-48f1-ab65-3e543cb08f5b/analysis",
+        headers: {
+          "Accept": "Application/json",
+          'Content-Type': 'Application/json'
+        },
+        body: json.encode(medicine));
+
+    print("  ${response.statusCode}");
+    print(response.body);
+
+    var responseData = json.decode(utf8.decode(response.bodyBytes));
+
+    var _medicineData = Analysis(
+      analysisId: responseData["analysisId"],
+     analysisType : responseData["analysisType"],
+      reason: responseData["reason"],
+      patientId: responseData["patientId"],
+    );
+    return _medicineData;
+  }
+
+
+   Future addmedicine({String id, String medicineName, String dose}) async {
     final Map<String, dynamic> medicine = {
       "medicineName": medicineName,
       "dose": dose,
@@ -719,7 +774,7 @@ _feild(){
     print("mediciiiiine   ${response.statusCode}");
     print(response.body);
 
-    var responseData = json.decode(response.body);
+    var responseData =json.decode(utf8.decode(response.bodyBytes));
 
     var _medicineData = Medicine(
       medicineId: responseData["medicineId"],
@@ -727,7 +782,63 @@ _feild(){
       dose: responseData["dose"],
       patientId: responseData["patientId"],
     );
-//  _medicineData = _newMedicine;
     return _medicineData;
   }
+
+
+  _addXray() {
+    List<Widget> tempList = _listOfxrays;
+    tempList.add(_xRay());
+    setState(() {
+      _listOfxrays = tempList;
+    });
+  }
+
+ Widget _xRay(){
+    TextEditingController _xray = TextEditingController();
+    TextEditingController _notes = TextEditingController();
+    _xrayControllers.add(_xray);
+    _xrayNotesController.add(_notes);
+     int index = _listOfxrays.length;
+    return
+       Column(
+        children: <Widget>[
+           ListTile(
+        trailing: IconButton(
+          icon: Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          onPressed: () {
+            setState(() {
+            _listOfxrays.removeAt(index);
+            });
+          },
+        ),
+        title: TextField(
+          controller: _xray,
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.right,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: 'نوع الصورة',
+          ),
+        ),
+        subtitle: TextField(
+            controller: _notes,
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.right,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: 'ملاحظات'
+            )),
+      ),
+      Divider(color: Colors.grey[300])
+        ],
+  
+    );
+  }
+  
+  
+
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo_doctor/Doctor/DoctorScreens/chatScreen.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/writeQuery.dart';
 import 'package:allo_doctor/models/doctor.dart';
@@ -201,7 +203,7 @@ Future<Patient> getPatient() async {
                                     child: snapShot.data.avatar==""?                                   
                                     Image.asset('assets/Patient.png',
                                         fit: BoxFit.fill)
-                                       : NetworkImage(snapShot.data.avatar)))),
+                                       : Image.file(File(  snapShot.data.avatar))))),
                                           
             ]),
              ),
@@ -340,4 +342,6 @@ Widget _textRow(String text){
     ],
   );
 }
+
+ 
 

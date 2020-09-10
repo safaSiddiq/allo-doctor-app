@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:allo_doctor/Doctor/DoctorScreens/chatScreen.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/patientDiagnosises.dart';
 import 'package:allo_doctor/Doctor/DoctorScreens/patientMidicalFile.dart';
+import 'package:allo_doctor/models/configSize.dart';
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +30,8 @@ int calculateAge(DateTime birthDate) {
 Widget patientCard(BuildContext context, Patient _patient) {
 
    MainModel model ;
+   SizeConfig().init(context);
+   
   var date = DateTime.parse(_patient.birthdate.substring(0, 10));
   var age = calculateAge(date);
   return Directionality(
@@ -40,32 +45,39 @@ Widget patientCard(BuildContext context, Patient _patient) {
           decoration:
               BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: ListTile(
-            contentPadding: EdgeInsets.only(top: 5, bottom: 10, right: 5),
+            contentPadding: EdgeInsets.only(top: 2, bottom: 10, right: 5),
             leading: Container(
-              width: 65,
-              height: 65,
+             width: SizeConfig.blockSizeHorizontal * 20.0,
+             height:  SizeConfig.blockSizeVertical * 30.0,
+          // height: 75,
+          // width: 75,
               padding: EdgeInsets.only(
-                right: 10.0,
+                right: 5.0,
               ),
               child:
                   CircleAvatar(
-                      radius: 41,
+                     radius: 41,
                       backgroundColor: Colors.white,
                       child: ClipOval(
                           child: SizedBox(
-                              width: 70.0,
-                              height: 70.0,
+                               width: SizeConfig.blockSizeHorizontal * 20.0,
+             height:  SizeConfig.blockSizeVertical * 30.0,
                               child: _patient.avatar == ""
                                   ? Image.asset('assets/Patient.png',
                                       fit: BoxFit.fill)
-                                  : Image.network(_patient.avatar)))),
+                                  : Image.file(File(_patient.avatar))))),
             ),
             title: Text(
               _patient.firstName + " " + _patient.lastName,
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
-            subtitle: Row(
+            subtitle:Container(
+              // width:h, SizeConfig.blockSizeHorizontal * 60.0,
+             // height:  SizeConfig.blockSizeVertical * 10.0,
+            child:
+
+             Row(
               children: [
                 Flexible(
                     child: Column(
@@ -103,7 +115,7 @@ Widget patientCard(BuildContext context, Patient _patient) {
                       Row(mainAxisSize: MainAxisSize.min, children: [
                         Container(
                             height: 25,
-                            width: 80,
+                            width:SizeConfig.blockSizeHorizontal * 22.0,           
                             child: RaisedButton(
                                 color: Colors.deepOrangeAccent,
                                 child: Text(
@@ -116,12 +128,13 @@ Widget patientCard(BuildContext context, Patient _patient) {
                                 onPressed: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) =>
-                                          PatientDiagnosises()));
+                                          PatientDiagnosises(_patient.patientId,model)));
                                 })),
-                        SizedBox(width: 4),
+                        SizedBox(width: 2),
                         Container(
                             height: 25,
-                            width: 70,
+                            width: SizeConfig.blockSizeHorizontal * 19.0,
+            
                             child: RaisedButton(
                                 color: Colors.deepOrangeAccent,
                                 child: Text(
@@ -137,10 +150,11 @@ Widget patientCard(BuildContext context, Patient _patient) {
                                           PatientMidicalFile(model,_patient)));
                               //  Navigator.pushNamed(context, "/PatientMidicalFile");
                                 })),
-                        SizedBox(width: 4),
+                        SizedBox(width: 2),
                         Container(
                             height: 25,
-                            width: 80,
+                            width: SizeConfig.blockSizeHorizontal * 22.0,
+            
                             child: RaisedButton(
                                 color: Colors.deepOrangeAccent,
                                 child: Text(
@@ -157,7 +171,7 @@ Widget patientCard(BuildContext context, Patient _patient) {
                       ])
                     ]))
               ],
-            ),
+            )),
           ),
         )),
   );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo_doctor/Doctor/DoctorScreens/queryView.dart';
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/models/query.dart';
@@ -16,13 +18,13 @@ class QueryCard extends StatefulWidget {
   final String patientId;
   final String queryId;
   QueryCard(
-      this.model, this.query, this.snapShot, this.patientId, this.queryId);
+    this.model, this.query, this.snapShot, this.patientId, this.queryId);
   @override
   _QueryCardState createState() => _QueryCardState();
 }
 
 class _QueryCardState extends State<QueryCard> {
-  int value = 0;
+ // int value = 0;
   Future<Patient> _patient;
   MainModel model;
   Future<Query> _query;
@@ -37,8 +39,8 @@ class _QueryCardState extends State<QueryCard> {
       "patientId": patientId,
       "approved": approved,
     };
-    final http.Response response = await http.patch(
-        "http://34.71.92.1:3000/doctors/d44adeef-03fe-4af6-8ef0-b6c7db377d2f/queries",
+    final http.Response response = await http.patch(//d44adeef-03fe-4af6-8ef0-b6c7db377d2f
+        "http://34.71.92.1:3000/doctors/${widget.model.doctorId}/queries",
         headers: {
           "Accept": "Application/json",
           'Content-Type': 'Application/json'
@@ -62,7 +64,7 @@ class _QueryCardState extends State<QueryCard> {
               ),
               onPressed: () {
                 setState(() {
-                  value = 1;
+                //  value = 1;
                   acceptingQuery(
                       queryId: snapShot, // widget.queryId,
                       patientId: widget.patientId,
@@ -81,7 +83,7 @@ class _QueryCardState extends State<QueryCard> {
               ),
               onPressed: () {
                 setState(() {
-                  value = 2;
+              //    value = 2;
                   acceptingQuery(
                       queryId: snapShot, //widget.query.queryId,
                       patientId: widget.patientId,
@@ -183,19 +185,21 @@ class _QueryCardState extends State<QueryCard> {
                         Column(
                           children: <Widget>[
                             Container(
+                              padding: EdgeInsets.only(
+                                    left: 5),
                                 margin: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
+                                    horizontal: 5, vertical: 5),
                                 child: CircleAvatar(
                                     radius: 32,
                                     backgroundColor: Colors.white,
                                     child: ClipOval(
-                                        child: //snapShot.data
-                                            //             .avatar ==
-                                            //         ""?
+                                        child: snapShot.data
+                                                        .avatar ==
+                                                    ""?
                                             Image.asset('assets/Patient.png',
                                                 fit: BoxFit.fill)
-                                        //  : Image.network( snapShot.data.avatar)
-                                        //)
+                                         : Image.file(File( snapShot.data.avatar))
+                                        
                                         ))),
                           ],
                         ),
@@ -292,16 +296,17 @@ class _QueryCardState extends State<QueryCard> {
                                         //         child: acceptQuery(
                                         //             snapShot2.data
                                         //                 .queryId),
-                                        //       )
-                                        // :
+                                        //       )// :
                                         Container(
                                             height: 30,
                                             width: 110,
                                             // child:  acceptButton(),
-                                            child: snapShot2.data.approved ==
-                                                    true //value == 1 &&value != 0
-                                                ? acceptButton()
-                                                : declineButton())
+                                            child: snapShot2.data.approved == true?acceptButton():declineButton() //acceptQuery(snapShot2.data.queryId) :snapShot2.data.approved == true ? acceptButton():declineButton()
+                                                //    true //value == 1 &&value != 0
+                                                //? acceptButton()
+                                                //: declineButton()
+                                                )
+
                                         // Container(
                                         //   height: 30,
                                         //   width: 110,
@@ -330,7 +335,6 @@ class _QueryCardState extends State<QueryCard> {
           }
         });
   }
-
   Widget acceptButton() {
     return RawMaterialButton(
         onPressed: () {

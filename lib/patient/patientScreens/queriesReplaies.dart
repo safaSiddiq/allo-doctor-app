@@ -1,3 +1,4 @@
+
 import 'package:allo_doctor/models/query.dart';
 import 'package:allo_doctor/patient/ui_widgets/queryReplyCard.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
@@ -11,6 +12,18 @@ class QueriesReplaies extends StatefulWidget {
 }
 
 class _QueriesReplaiesState extends State<QueriesReplaies> {
+
+
+
+ final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+     GlobalKey<RefreshIndicatorState>();
+
+
+
+
+
+
+
   String _selectedText = 'اختر نوع الاستعلام';
 List<Query> _queriesResults = [];
 List<Query> _filteredQuery = [];
@@ -156,7 +169,10 @@ void _filterQuery(){
                   child: bottonsRow(),
                   preferredSize: Size(double.infinity, 90)),
             ),
-          ),body: 
+          ),body:  RefreshIndicator(
+    key: _refreshIndicatorKey,
+    onRefresh: _refresh,
+    child: Container(child:
           
           
            _pressed == 0?
@@ -185,8 +201,16 @@ void _filterQuery(){
                return  queryReplyCard(context,_waiting[index]);
                
                })
-                
-        ));
+        ))));
+  }
+
+  Future  _refresh(){
+    widget.model.getQueryResultData().then((_){
+     setState(() {
+       _queriesResults = widget.model.queriesResults;
+     });
+    });
+ return widget.model.getQueryResultData();
   }
 
 

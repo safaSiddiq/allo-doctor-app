@@ -1,4 +1,3 @@
-import 'package:allo_doctor/patient/input_form/image_input.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -250,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.white,
             onPressed: () {},
           ),
-          ImageInput(),
+        //  ImageInput(),
           IconButton(
             icon: Icon(Icons.mic),
             iconSize: 25.0,

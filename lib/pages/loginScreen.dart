@@ -77,13 +77,14 @@ class _LoginScreen extends State<LoginScreen> {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
         onPressed: () async {
-       // widget.model.login(_userNameController.text, _passwordController.text);
-        // await widget.model.login("omar","\$2a\$10\$7L3JKaAPOz9DX2.1oXoOkeypkD8bN2axYVOA1Xcw6YvVh42fty.3K");
-       if (widget.model.patient==null){
-         print("user does not exist");
+       // widget.model.login(_userNameController.text, _passwordController.text);//"022d511b-222e-44ee-b99a-cba83238f003"
+     await widget.model.logins("ahmed","gPjDRXJqmwhZi.ntSq1HVe1NN401v63pgLtg6.0UTiJdtof5GffvW",);
+      //  if (widget.model.patient==null){
+
+      //    print("user does not exist");
        
-       }
-         Navigator.pushNamed(context, "/homeScreenPatient");
+      //  }
+       ///  Navigator.pushNamed(context, "/homeScreenPatient");
         });
   }
 

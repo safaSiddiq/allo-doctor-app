@@ -27,7 +27,6 @@ import 'Doctor/DoctorScreens/chatScreen.dart';
 import 'Doctor/DoctorScreens/diagnosis.dart';
 import 'Doctor/DoctorScreens/homeScreen.dart';
 import 'Doctor/DoctorScreens/messageScreen.dart';
-import 'Doctor/DoctorScreens/patientDiagnosises.dart';
 import 'Doctor/DoctorScreens/patientMidicalFile.dart';
 import 'Doctor/DoctorScreens/patientsScreen.dart';
 import 'Doctor/DoctorScreens/personalInfo.dart';
@@ -72,7 +71,7 @@ class MyApp extends StatelessWidget {
               "/CallCenterScreen": (BuildContext context) => CallCenterScreen(),
               "/ChatScreen": (BuildContext context) => ChatScreen(),
               "/DiagnosisesScreen": (BuildContext context) =>
-                  DiagnosisesScreen(),
+                  DiagnosisesScreen(model),
               "/DiagnosisViewScreen": (BuildContext context) =>
                   DiagnosisViewScreen(model, query),
               "/DoctorFileScreen": (BuildContext context) =>
@@ -90,8 +89,8 @@ class MyApp extends StatelessWidget {
               "/DrChatScreen": (BuildContext context) => DrChatScreen(),
               "/Diagnosis": (BuildContext context) => Diagnosis(),
               "/DrMessageScreen": (BuildContext context) => DrMessageScreen(),
-              "/PatientDiagnosises": (BuildContext context) =>
-                  PatientDiagnosises(),
+              // "/PatientDiagnosises": (BuildContext context) =>
+              //     PatientDiagnosises(),
               "/PatientMidicalFile": (BuildContext context) =>
                   PatientMidicalFile(model, patient),
               "/PatientsScreen": (BuildContext context) =>

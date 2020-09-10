@@ -13,7 +13,7 @@ class ConnectedDatas extends Model{
   Doctor _doctor;
   List<Patient>_patients = [];
   List<Query> _queries = [];
-  List<Query> _queriesResults = [];
+  //List<Query> _queriesResults = [];
   
   bool _isLoading = false;
   String _doctorId;
@@ -21,11 +21,22 @@ class ConnectedDatas extends Model{
   List _invitationCodes=[];
   Medicine _newMedicine;
   List<String> _patientIds = [];
+
+  List<dynamic> _rating;
+
+  List<dynamic> get rating{
+    return _rating;
+  }
    
    List<String> get patientIds{
      return _patientIds;
    }
   
+
+
+  String get doctorId{
+    return _doctorId;
+  }
 List<String >get initationCodes {
   return _invitationCodes;
 }
@@ -161,8 +172,8 @@ print("body invetation${response.body}");
         "email": email,
       // "userName": userName,
       //"password": password
-    };
-    var jsonData = json.encode(patient);
+    };//json.decode(utf8.decode(response.bodyBytes))
+    var jsonData =utf8.encode(json.encode(patient));
     // var data = json.decode(response.body);
     try {
       final http.Response response = await http.post(
@@ -181,6 +192,7 @@ print("body invetation${response.body}");
         notifyListeners();
 
         var data = json.decode(response.body); 
+        _doctorId = data["doctorId"];
          
         _saveId(data["doctorId"]);
         _doctorId = _saveId(data["doctorId"]).toString();
@@ -214,10 +226,10 @@ print("body invetation${response.body}");
         'Content-Type': 'Application/json'
       },
     );
-      print("response stuse get info dr :${response.statusCode}");
-      print("response body :${response.body}");
     _statusCode =response.statusCode;
-     var _doctorData = json.decode(response.body);
+     var _doctorData =json
+        .decode(utf8.decode(response.bodyBytes));
+        print(_doctorData);
   var  _newDoctor =Doctor(
       //  patientId: _patientId,
         doctorId: _doctorData['doctorId'],
@@ -248,9 +260,9 @@ print("body invetation${response.body}");
         "Accept": "Application/json",
         'Content-Type': 'Application/json'
       },
-    ).then((http.Response response){
+    ).then<Null>((http.Response response){
       List<Query> fetchedQueries =[];
-       final List<dynamic> queryListData = json.decode(response.body);
+       final List<dynamic> queryListData =   json.decode(utf8.decode(response.bodyBytes));// json.decode(response.body);
       print("response doctors stuse get queries :${response.statusCode}");
       print("response body :${response.body}");
 
@@ -273,7 +285,8 @@ print("body invetation${response.body}");
       });
 
       _queries = fetchedQueries;
-      print(_queries);
+      _isLoading = false;
+      notifyListeners();
     });
   }
 
@@ -351,12 +364,40 @@ print("body invetation${response.body}");
     notifyListeners();
   }
 
+Future<Patient> getPatientDr(String patientId) async {
+    http.Response response = await http.get(
+      //  "http://192.168.1.36:3000/patients/$_patientId",
+      "http://34.71.92.1:3000/patients/$patientId",
+      headers: {
+        "Accept": "Application/json",
+        'Content-Type': 'Application/json'
+      },
+    );
+    print("response stuse get info :${response.statusCode}");
+    print("response body :${response.body}");
+    _statusCode = response.statusCode;
+    var _patientData = json
+        .decode(utf8.decode(response.bodyBytes)); //json.decode(response.body);
+    var _newPatient = Patient(
+      //  patientId: _patientId,
+      patientId: _patientData['patientId'],
+      firstName: _patientData['firstName'],
+      lastName: _patientData['lastName'],
+      birthdate: _patientData["birthdate"],
+      gender: _patientData["gender"],
+      avatar: _patientData["avatar"],
+      email: _patientData["email"],
+    );
 
-Future<Doctor> updateDoctorData({
+    
+    return _newPatient;
+    // return Patient.fromJson(json.decode(response.body));
+  }
+Future updateDoctorData({
   String firstName,
       String lastName,
       String email,
-    //   String avatar,
+       String avatar,
      String birthdate,
      String bio
     // String gender
@@ -365,14 +406,13 @@ Future<Doctor> updateDoctorData({
   _isLoading = true;
   notifyListeners();
 final Map<String,dynamic> updateData = {
- // "patientId":_patientId,
    "firstName": firstName,
       "lastName": lastName,
     //  "email": email,
        "birthdate": birthdate,
-       "bio":bio
+       "bio":bio,
       // "gender": gender,
-      // "avatar": avatar
+       "avatar": avatar
 };
 
 String id ="d44adeef-03fe-4af6-8ef0-b6c7db377d2f";
@@ -385,28 +425,33 @@ String id ="d44adeef-03fe-4af6-8ef0-b6c7db377d2f";
   );
 
  _statusCode =response.statusCode;
-     var _doctorData = json.decode(response.body);
-print("dfmg${response.statusCode}");
-print("dfmg${response.body}");
 
-     _isLoading = false;
-  notifyListeners();
-  var  _newDoctor =Doctor(
-      //  patientId: _patientId,
-        doctorId: _doctorData['doctortId'],
-        firstName: _doctorData['firstName'],
-        lastName: _doctorData['lastName'],
-        birthdate: _doctorData["birthdate"],
-        gender: _doctorData["gender"],
-        avatar: _doctorData["avatar"],
-        email: _doctorData["email"],
-        major: _doctorData["major"],
-        bio: _doctorData["bio"]
-      );
-      _doctor = _newDoctor;
-     return _newDoctor;
+
+}
+
+
+Future getRating()async{
+   http.Response response =await http.get("http://34.71.92.1:3000/doctors/d44adeef-03fe-4af6-8ef0-b6c7db377d2f/ratings",
+     headers: {
+                "Accept": "Application/json",
+                'Content-Type': 'Application/json',
+              },
   
-//  return  Patient.fromJson(json.decode(response.body));
+   );
+
+     List<dynamic> _ratingData =json.decode(response.body);
+        print(_ratingData);
+        List _ratings=[];
+
+        _ratingData.forEach((dynamic data){
+          final item = data["ratingStars"];
+
+          _ratings.add(item);
+
+        });
+        _rating = _ratings;
+        return _ratings;
+
 
 }
 

@@ -1,59 +1,82 @@
+import 'dart:io';
+
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/patient/patientScreens/doctorFile.dart';
 import 'package:allo_doctor/patient/patientScreens/fillQueryDr.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
 
-Widget doctorCard(BuildContext context,Doctor doctor,dynamic snapShot, ) {
+Widget doctorCard(
+  BuildContext context,
+  Doctor doctor,
+  dynamic snapShot,
+) {
   final MainModel model = MainModel();
-  return 
-   Directionality(
+  return Directionality(
     textDirection: TextDirection.rtl,
     child: Card(
-      color: Colors.white,
+        color: Colors.white,
         //key: ValueKey(record.name),
         elevation: 0.0,
         //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)) ,
-       margin: EdgeInsets.only(top:10,bottom:5,left: 10,right: 10),
+        margin: EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10),
         child: Container(
           decoration:
               BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: ListTile(
-            contentPadding: EdgeInsets.only(top: 5, bottom: 10, right: 5),
-            leading:
-                 Container(
-                     width: 70,
-                   height: 70,  
+            contentPadding: EdgeInsets.only(top: 2, bottom: 10, right: 5),
+            leading://PreferredSize(
+            //   preferredSize: Size.fromHeight(110),
+            //   child:
+             Container(
+                width: 75,
+                height: 75,
                 padding: EdgeInsets.only(
-                  right: 10.0,
+                  right: 5.0,
                 ),
-                child: Stack(
-                  children: <Widget>[
-                     CircleAvatar(
-                            radius: 41,
-                            backgroundColor: Colors.white,
-                            child: ClipOval(
-                                child: SizedBox(
-                                    width: 70.0,
-                                    height: 70.0,
-                                    child: doctor.avatar =="null"?//doctor.avatar == null?
+              //   Container(
+              // width: 65,
+              // height: 65,
+              // padding: EdgeInsets.only(
+              //   right: 10.0,
+              // ),
+              // child:
+              //     CircleAvatar(
+              //         radius: 41,
+              //         backgroundColor: Colors.white,
+              //         child: ClipOval(
+              //             child: SizedBox(
+              //                 width: 70.0,
+              //                 height: 70.0,
+              //                 child: _patient.avatar == ""
+              //                     ? Image.asset('assets/Patient.png',
+              //                         fit: BoxFit.fill)
+              //                     : Image.file(File(_patient.avatar))))),
+   // ),
+                  child:  CircleAvatar(
+                        radius: 41,
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                            child: SizedBox(
+                                width: 75.0,
+                                height: 75.0,
+                                child: doctor.avatar == ""
+                                    ? //doctor.avatar == null?
                                     Image.asset('assets/Doctor.png',
                                         fit: BoxFit.fill)
-                                        :Image.network(doctor.avatar.toString())))),
-             
-                  ],
-                )),    
+                                    : Image.file(File(doctor.avatar.toString()),
+                                        fit: BoxFit.fill)))),
+            ),
             title: Text(
-              doctor.firstName +" "+doctor.lastName
-             ,
+              doctor.firstName + " " + doctor.lastName,
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
             subtitle: Row(
               children: [
-                SizedBox(width:5),
-                Flexible(child:
-                    Column(
+                SizedBox(width: 5),
+                Flexible(
+                    child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                       SizedBox(height: 5),
@@ -81,9 +104,10 @@ Widget doctorCard(BuildContext context,Doctor doctor,dynamic snapShot, ) {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => DoctorFileScreen(model ,doctor,snapShot)));
-                             //  Navigator.pushNamed(context, "/DoctorFileScreen");
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => DoctorFileScreen(
+                                          model, doctor, snapShot)));
+                                  //  Navigator.pushNamed(context, "/DoctorFileScreen");
                                 })),
                         SizedBox(width: 20),
                         Container(
@@ -100,9 +124,10 @@ Widget doctorCard(BuildContext context,Doctor doctor,dynamic snapShot, ) {
                                     borderRadius: BorderRadius.circular(8.0)),
                                 onPressed: () {
                                   print(snapShot);
-                                   Navigator.of( context).push(
-              MaterialPageRoute(builder: (context) => FillQueryDrScreen(model ,doctor,snapShot)));
-                               // Navigator.pushNamed(context, "/FillQueryDrScreen");
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => FillQueryDrScreen(
+                                          model, doctor, snapShot)));
+                                  // Navigator.pushNamed(context, "/FillQueryDrScreen");
                                 })),
                       ])
                     ]))

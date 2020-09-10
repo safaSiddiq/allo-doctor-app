@@ -148,12 +148,12 @@ class _RegistrationASdoctor extends State<RegistrationASdoctor> {
                     });
                     },
                     initialDateTime: DateTime(1980).toUtc(),
-                    minDateTime: DateTime(1980).toUtc(),
+                    minDateTime: DateTime(1960).toUtc(),
                     maxDateTime: DateTime(2020).toUtc(),
                     locale: DateTimePickerLocale.ar,
                     pickerTheme: DateTimePickerTheme(
                         showTitle: false,
-                        pickerHeight: 60.0,
+                        pickerHeight: 80.0,
                         itemTextStyle:
                             TextStyle(color: Colors.black, fontSize: 18))
                             ),
@@ -227,6 +227,7 @@ Widget firstName() {
       textDirection: TextDirection.rtl,
       child: TextFormField(
       controller: _firstNameController,
+      style: TextStyle(color:Colors.white),
         decoration: InputDecoration(
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.white, width: 2.0)),
@@ -249,6 +250,7 @@ Widget lastName() {
       textDirection: TextDirection.rtl,
       child: TextFormField(
         controller: _lastNameController,
+        style: TextStyle(color:Colors.white),
         decoration: InputDecoration(
             labelText: 'اسم العائلة',
             labelStyle: TextStyle(color: Colors.white,fontSize: 18),
@@ -267,6 +269,7 @@ Widget emailAdress() {
       textDirection: TextDirection.rtl,
       child: TextFormField(
         controller: _emailController,
+        style: TextStyle(color:Colors.white),
         decoration: InputDecoration(
           labelText: 'البريد الالكتروني',
           labelStyle: TextStyle(color: Colors.white,fontSize: 18),
@@ -286,6 +289,7 @@ Widget userName() {
       textDirection: TextDirection.rtl,
       child: TextFormField(
         controller: _userNameController,
+        style: TextStyle(color:Colors.white),
         textDirection: TextDirection.rtl,
         decoration: InputDecoration(
           labelText: 'اسم المستخدم',
@@ -304,6 +308,7 @@ Widget passwordField() {
       textDirection: TextDirection.rtl,
       child: TextFormField(
         controller: _passwordController,
+        style: TextStyle(color:Colors.white),
           decoration: InputDecoration(
               labelText: 'كلمة المرور',
               labelStyle: TextStyle(color: Colors.white,fontSize: 18),
@@ -311,7 +316,7 @@ Widget passwordField() {
                   borderSide: BorderSide(color: Colors.white,width: 2.0))),
           keyboardType: TextInputType.visiblePassword,
           textAlign: TextAlign.right,
-          style: TextStyle(color: Colors.white)
+        
           //onSaved: (String value){password=value},
           ));
 }
@@ -319,6 +324,7 @@ Widget passwordField() {
 Widget bio() {
   return Directionality(textDirection: TextDirection.rtl, child: 
   TextFormField(
+    style: TextStyle(color:Colors.black),
     controller: _bioController,
     decoration: InputDecoration(
       fillColor: Colors.white,

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:allo_doctor/Doctor/DoctorScreens/diagnosis.dart';
 import 'package:allo_doctor/models/Diagnosis.dart';
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/models/patient.dart';
@@ -32,35 +31,32 @@ class _DiagnosisViewScreenState extends State<DiagnosisViewScreen> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
-  Future<Doctor> _doctor;
 
-  Future<Doctor> getDoctor(String id) async {
-    http.Response response = await http.get(
-      "http://34.71.92.1:3000/doctors/$id",
+  Future<Doctor> getDoctorData(String id) async {  
+   http.Response response = await http.get(
+   "http://34.71.92.1:3000/doctors/$id",
       headers: {
         "Accept": "Application/json",
         'Content-Type': 'Application/json'
       },
     );
-    print("response stuse get info dr :${response.statusCode}");
-    print("response body :${response.body}");
+    var _doctorData = json.decode(utf8.decode(response.bodyBytes));
+  var  _newDoctor =Doctor(
+        doctorId: _doctorData['doctorId'],
+        firstName: _doctorData['firstName'],
+        lastName: _doctorData['lastName'],
+        birthdate: _doctorData["birthdate"],
+        gender: _doctorData["gender"],
+        major: _doctorData["major"],
+        avatar: _doctorData["avatar"],
+        bio: _doctorData["bio"],
+        email: _doctorData["email"],
 
-    var _doctorData = json.decode(response.body);
-    var _newDoctor = Doctor(
-      //  patientId: _patientId,
-      doctorId: _doctorData['doctorId'],
-      firstName: _doctorData['firstName'],
-      lastName: _doctorData['lastName'],
-      birthdate: _doctorData["birthdate"],
-      gender: _doctorData["gender"],
-      major: _doctorData["major"],
-      avatar: _doctorData["avatar"],
-      bio: _doctorData["bio"],
-      email: _doctorData["email"],
-    );
-    return _newDoctor;
-    // return Patient.fromJson(json.decode(response.body));
+      );
+    return  _newDoctor;
+
   }
+
 
   Future<Patient> getPatient() async {
     var pId = widget.query.patientId;
@@ -72,7 +68,7 @@ class _DiagnosisViewScreenState extends State<DiagnosisViewScreen> {
         'Content-Type': 'Application/json'
       },
     );
-    var _patientData = json.decode(response.body);
+    var _patientData =  json.decode(utf8.decode(response.bodyBytes));;
     var _newPatient = Patient(
       //  patientId: _patientId,
       patientId: _patientData['patientId'],
@@ -98,9 +94,9 @@ class _DiagnosisViewScreenState extends State<DiagnosisViewScreen> {
         'Content-Type': 'Application/json'
       },
     );
-    print("response mediccciiiinnnn :${response.statusCode}");
-    print("response body :${response.body}");
-    final List<dynamic> medicineData = json.decode(response.body);
+    // print("response mediccciiiinnnn :${response.statusCode}");
+    // print("response body :${response.body}");
+    final List<dynamic> medicineData = json.decode(utf8.decode(response.bodyBytes));// json.decode(response.body);
     final List<Medicine> medicineListData = [];
     medicineData.forEach((dynamic responseData) {
       final Medicine data = Medicine(
@@ -170,7 +166,7 @@ class _DiagnosisViewScreenState extends State<DiagnosisViewScreen> {
               ],
             ),
             body: FutureBuilder(
-                future: getDoctor(widget.query.doctorId),
+                future: getDoctorData(widget.query.doctorId),
                 builder: (context, snapShot) {
                   if (snapShot.hasData) {
                     return ListView(

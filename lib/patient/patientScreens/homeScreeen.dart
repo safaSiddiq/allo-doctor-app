@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo_doctor/models/patient.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +75,8 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
                                                 ? Image.asset(
                                                     'assets/Patient.png',
                                                     fit: BoxFit.fill)
-                                                : Image.network(
-                                                    snapShot.data.avatar)))),
+                                                : Image.file(
+                                                  File(snapShot.data.avatar))))),
                                 
                               ],
                             ));
@@ -129,12 +131,12 @@ class _HomeScreenPatientState extends State<HomeScreenPatient> {
                                                   child: SizedBox(
                                                       width: 70.0,
                                                       height: 70.0,
-                                                      child: //_patient.avatar == "null"
-                                                          //?
+                                                      child: snapShot.data.avatar == ""
+                                                          ?
                                                           Image.asset(
                                                               'assets/Patient.png',
                                                               fit: BoxFit.fill)
-                                                      //: Image.network( _patient.avatar)
+                                                      : Image.file(File( snapShot.data.avatar))
                                                       ))),
                                        
                                         ],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:allo_doctor/models/doctor.dart';
 import 'package:allo_doctor/models/query.dart';
 import 'package:allo_doctor/scoped_model.dart/mainModel.dart';
@@ -15,6 +17,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
+  // ignore: unused_field
   bool _isDisabled = false;
   int value = 0;
 
@@ -26,6 +29,7 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
     ],
     colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
   );
+ // ignore: unused_field
  List<Query> _queries;
  
   Future<Doctor> _doctor;
@@ -160,12 +164,12 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                                             width: 40.0,
                                             height: 40.0,
                                             child:
-                                                snapShot.data.avatar == "null"
+                                                snapShot.data.avatar == ""
                                                     ? Image.asset(
                                                         "assets/Doctor.png",
                                                         fit: BoxFit.fill)
-                                                    : Image.network(
-                                                        snapShot.data.avatar,
+                                                    : Image.file(
+                                                       File( snapShot.data.avatar),
                                                         fit: BoxFit.fill)))),
                               
                               ],
@@ -225,15 +229,15 @@ class _HomeScreenDrState extends State<HomeScreenDr> {
                                                               child: snapShot
                                                                           .data
                                                                           .avatar ==
-                                                                      "null"
+                                                                      ""
                                                                   ? Image.asset(
                                                                       'assets/Doctor.png',
                                                                       fit: BoxFit
                                                                           .fill)
-                                                                  : Image.network(
+                                                                  : Image.file(File(
                                                                       snapShot
                                                                           .data
-                                                                          .avatar)))),
+                                                                          .avatar))))),
                                                 ],
                                               ));
                                         } else {

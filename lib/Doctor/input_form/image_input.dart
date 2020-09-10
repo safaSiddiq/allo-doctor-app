@@ -1,29 +1,32 @@
 import 'dart:io';
-import 'package:allo_doctor/models/patient.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageInput extends StatefulWidget {
-  final Function setImage;
-  final Patient patient;
 
-  ImageInput(this.setImage, this.patient);
+class ImageInputDr extends StatefulWidget {
+   final Function setImage;
+  //final Patient patient;
+
+  ImageInputDr(this.setImage,);
   @override
   State<StatefulWidget> createState() {
-    return _ImageInputState();
+    return _ImageInputDrState();
   }
 }
 
-class _ImageInputState extends State<ImageInput> {
-// ignore: unused_field
-File _imageFile;
+
+class _ImageInputDrState extends State<ImageInputDr> {
+ // ignore: unused_field
+ File _imageFile;
 
   void _getImage(BuildContext context, ImageSource source) {
-    ImagePicker.pickImage(source: source, imageQuality: 50, maxHeight: 400, maxWidth: 400).then((File image) {
+     ImagePicker.pickImage(source: source, maxWidth: 400.0).then((File image) {
       setState(() {
       _imageFile = image;
+
       });
-      widget.setImage(image);
+       widget.setImage(image);
       Navigator.pop(context);
     });
   }
@@ -67,17 +70,17 @@ File _imageFile;
   Widget build(BuildContext context) {
     Widget editButton() {
       return Container(
-          padding: EdgeInsets.only(bottom: 4),
+          //padding: EdgeInsets.only(bottom: 4,right:12),
           child: Row(textDirection: TextDirection.rtl, children: <Widget>[
             Icon(
               Icons.edit,
-              size: 15.0,
+              size: 16.0,
               color: Colors.white,
             ),
             Text(
               'تغيير الصورة',
-              textAlign: TextAlign.end,
-              style: TextStyle(color: Colors.white, fontSize: 10),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white, fontSize: 11),
             ),
           ]));
     }
@@ -85,9 +88,9 @@ File _imageFile;
     return Column(children: <Widget>[
 
     Container(
-     // padding: EdgeInsets.only(left:5,),
+      padding: EdgeInsets.only(left:10,),
       child:  RaisedButton(
-        padding: EdgeInsets.only(top:5,),
+        padding: EdgeInsets.only(top:5,right:18,),
     
           shape: RoundedRectangleBorder(
             side: BorderSide(

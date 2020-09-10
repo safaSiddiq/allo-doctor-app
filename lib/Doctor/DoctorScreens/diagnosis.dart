@@ -6,14 +6,27 @@ class Diagnosis extends StatefulWidget {
 }
 
 class _DiagnosisState extends State<Diagnosis> {
-  bool isOnline = true;
+
+
+   final mainColor = LinearGradient(
+    begin: FractionalOffset.topCenter,
+    stops: [
+      0.0,
+      1.0,
+    ],
+    colors: [Color(0xFF87C9BF), Color(0xFF2B95AF)],
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.teal,
+    return Container(
+        decoration: BoxDecoration(gradient: mainColor),
+        child:
+    Scaffold(
+      backgroundColor: Color(0xff0000),
       appBar: AppBar(
        
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xff0000),
         elevation: 0,
         actions: <Widget>[
            Container(
@@ -30,30 +43,12 @@ class _DiagnosisState extends State<Diagnosis> {
                           height: 40.0,
                           child: Image.asset('assets/Doctor.png',
                               fit: BoxFit.fill)))),
-                                  isOnline
-                                ? Container(
-                                    alignment: Alignment.bottomRight,
-                                    margin: EdgeInsets.only(bottom: 5),
-                                    child: Container(
-                                      height: 10,
-                                      width: 10,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 1,
-                                        ),
-                                        shape: BoxShape.circle,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
+                                  
             ],
               ),),
         ],
       ),   
-      body: Container(
-        
+      body: Container( 
         margin: EdgeInsets.symmetric(horizontal:20),
         child: 
        ListView(     
@@ -128,9 +123,9 @@ class _DiagnosisState extends State<Diagnosis> {
          SizedBox(height:15)
         ],
       ),   
-    ));
+    )));
   }
-}
+
 
 Widget tilteWidget(String title){
   return  Container(
@@ -253,8 +248,8 @@ Widget testsContainer(){
       ],
     ),
   );
-}
 
+}
 Widget raysContainers(){
   return Container(
      margin: EdgeInsets.symmetric(horizontal:10,vertical:10),
@@ -310,4 +305,7 @@ Widget raysContainers(){
       ],
     ),
   );
+}
+
+
 }
